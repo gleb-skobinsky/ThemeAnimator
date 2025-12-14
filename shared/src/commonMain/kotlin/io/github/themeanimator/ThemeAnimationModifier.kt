@@ -6,6 +6,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.drawscope.ContentDrawScope
 import androidx.compose.ui.graphics.layer.GraphicsLayer
+import androidx.compose.ui.graphics.layer.drawLayer
 import androidx.compose.ui.node.DrawModifierNode
 import androidx.compose.ui.node.ModifierNodeElement
 import androidx.compose.ui.node.invalidateDraw
@@ -80,6 +81,7 @@ internal class ThemeAnimationNode<T>(
                 invalidateDraw()
             }
             isAnimating = false
+            invalidateDraw()
         }
     }
 
@@ -93,10 +95,12 @@ internal class ThemeAnimationNode<T>(
             drawImage(old, alpha = 1f)
             drawImage(new, alpha = alpha)
         } else {
+            // Record content to graphicsLayer for future snapshots
             graphicsLayer.record {
                 this@draw.drawContent()
             }
-            drawContent()
+            // Draw the recorded layer
+            drawLayer(graphicsLayer)
         }
     }
 }

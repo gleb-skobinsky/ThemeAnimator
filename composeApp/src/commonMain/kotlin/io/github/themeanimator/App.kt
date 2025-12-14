@@ -20,23 +20,25 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.darkColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.dp
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 @Preview
 fun App() {
-    var isDark: Boolean by rememberSaveable { mutableStateOf(false) }
-    val theme = if (isDark) darkColorScheme() else lightColorScheme()
+    val animationState = rememberThemeAnimationState()
+    val theme = if (animationState.isDark) {
+        darkColorScheme()
+    } else {
+        lightColorScheme()
+    }
+
     ThemeAnimationScope(
-        theme = theme
+        theme = theme,
+        state = animationState
     ) {
         MaterialTheme(
             colorScheme = theme
@@ -50,7 +52,7 @@ fun App() {
                     ) {
                         IconButton(
                             onClick = {
-                                isDark = !isDark
+                                animationState.toggleTheme()
                             }
                         ) {
                             Icon(

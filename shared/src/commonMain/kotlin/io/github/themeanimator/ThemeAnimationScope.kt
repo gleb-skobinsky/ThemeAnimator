@@ -7,13 +7,14 @@ import androidx.compose.ui.graphics.rememberGraphicsLayer
 
 @Composable
 fun <T> ThemeAnimationScope(
+    state: ThemeAnimationState,
     theme: T,
     content: @Composable () -> Unit,
 ) {
     val graphicsLayer = rememberGraphicsLayer()
 
     Box(
-        modifier = Modifier.themeAnimation(theme, graphicsLayer)
+        modifier = Modifier.themeAnimation(state, theme, graphicsLayer)
     ) {
         content()
     }

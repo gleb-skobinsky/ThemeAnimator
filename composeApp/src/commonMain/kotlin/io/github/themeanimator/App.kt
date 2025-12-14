@@ -43,7 +43,9 @@ fun App() {
                     },
                     actions = {
                         IconButton(
-                            onClick = {}
+                            onClick = {
+                                isDark = !isDark
+                            }
                         ) {
                             Icon(
                                 imageVector = MoonIcon,

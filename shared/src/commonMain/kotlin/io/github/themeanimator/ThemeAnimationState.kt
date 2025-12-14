@@ -2,6 +2,7 @@ package io.github.themeanimator
 
 import androidx.compose.animation.core.AnimationSpec
 import androidx.compose.animation.core.tween
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.getValue
@@ -22,10 +23,11 @@ internal enum class RecordStatus {
 
 @Stable
 class ThemeAnimationState(
+    initialIsDark: Boolean,
     private val coroutineScope: CoroutineScope,
     internal val animationSpec: AnimationSpec<Float>,
 ) {
-    var isDark: Boolean by mutableStateOf(false)
+    var isDark: Boolean by mutableStateOf(initialIsDark)
         private set
 
     internal val requestRecord = MutableStateFlow(RecordStatus.Initial)
@@ -42,12 +44,17 @@ class ThemeAnimationState(
 @Composable
 fun rememberThemeAnimationState(
     animationSpec: AnimationSpec<Float> = tween(300),
+    initialIsDark: Boolean = isSystemInDarkTheme(),
 ): ThemeAnimationState {
     val coroutineScope = rememberCoroutineScope()
     return remember(
         coroutineScope,
         animationSpec
     ) {
-        ThemeAnimationState(coroutineScope, animationSpec)
+        ThemeAnimationState(
+            initialIsDark = initialIsDark,
+            coroutineScope = coroutineScope,
+            animationSpec = animationSpec
+        )
     }
 }

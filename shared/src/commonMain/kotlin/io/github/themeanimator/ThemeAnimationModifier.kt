@@ -1,14 +1,6 @@
 package io.github.themeanimator
 
 import androidx.compose.animation.core.animate
-import androidx.compose.animation.core.tween
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.Stable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.drawscope.ContentDrawScope
@@ -18,48 +10,19 @@ import androidx.compose.ui.node.DrawModifierNode
 import androidx.compose.ui.node.LayoutAwareModifierNode
 import androidx.compose.ui.node.ModifierNodeElement
 import androidx.compose.ui.node.invalidateDraw
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
-import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.launch
-
-internal enum class RecordStatus {
-    Initial,
-    RecordRequested,
-    Recorded
-}
-
-@Stable
-class ThemeAnimationState(
-    private val coroutineScope: CoroutineScope,
-) {
-    var isDark: Boolean by mutableStateOf(false)
-        private set
-
-    internal val requestRecord = MutableStateFlow(RecordStatus.Initial)
-
-    fun toggleTheme() {
-        coroutineScope.launch {
-            requestRecord.value = RecordStatus.RecordRequested
-            requestRecord.firstOrNull { it == RecordStatus.Recorded }
-            isDark = !isDark
-        }
-    }
-}
-
-@Composable
-fun rememberThemeAnimationState(): ThemeAnimationState {
-    val coroutineScope = rememberCoroutineScope()
-    return remember(coroutineScope) { ThemeAnimationState(coroutineScope) }
-}
 
 internal fun <T> Modifier.themeAnimation(
     state: ThemeAnimationState,
     theme: T,
     graphicsLayer: GraphicsLayer,
-) = this then ThemeAnimationElement(theme, graphicsLayer, state)
+) = this then ThemeAnimationElement(
+    theme = theme,
+    graphicsLayer = graphicsLayer,
+    state = state
+)
 
 internal data class ThemeAnimationElement<T>(
     val theme: T,
@@ -132,7 +95,7 @@ internal class ThemeAnimationNode<T>(
             animate(
                 initialValue = 0f,
                 targetValue = 1f,
-                animationSpec = tween(3000)
+                animationSpec = state.animationSpec
             ) { value, _ ->
                 animationProgress = value
                 invalidateDraw()

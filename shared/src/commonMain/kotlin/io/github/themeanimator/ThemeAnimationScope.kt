@@ -14,7 +14,11 @@ fun <T> ThemeAnimationScope(
     val graphicsLayer = rememberGraphicsLayer()
 
     Box(
-        modifier = Modifier.themeAnimation(state, theme, graphicsLayer)
+        modifier = Modifier.themeAnimation(
+            state = state,
+            theme = theme,
+            graphicsLayer = graphicsLayer
+        )
     ) {
         content()
     }

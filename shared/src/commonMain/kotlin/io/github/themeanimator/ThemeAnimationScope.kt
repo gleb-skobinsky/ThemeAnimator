@@ -3,6 +3,7 @@ package io.github.themeanimator
 import androidx.compose.foundation.layout.Box
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocal
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
 
 @Composable
@@ -15,7 +16,10 @@ fun <T> ThemeAnimationScope(
     val animationState = rememberThemeAnimationState(
         initialTheme = initialTheme
     )
-    Box(Modifier.themeAnimation(animationState)) {
+    Box(Modifier.themeAnimation(animationState, content)) {
         content()
+    }
+    LaunchedEffect(currentTheme) {
+        animationState.updateCurrentTheme(currentTheme)
     }
 }

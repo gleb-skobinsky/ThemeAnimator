@@ -28,7 +28,7 @@ import androidx.compose.ui.unit.dp
 @Preview
 fun App() {
     val animationState = rememberThemeAnimationState(
-        animationSpec = tween(1000),
+        animationSpec = tween(700),
         format = ThemeAnimationFormat.CircularAroundPress
     )
     val theme = if (animationState.isDark) {

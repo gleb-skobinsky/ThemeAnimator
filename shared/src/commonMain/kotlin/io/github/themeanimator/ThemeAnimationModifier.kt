@@ -1,9 +1,7 @@
 package io.github.themeanimator
 
 import androidx.compose.animation.core.animate
-import androidx.compose.foundation.interaction.PressInteraction
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.drawscope.ContentDrawScope
 import androidx.compose.ui.graphics.layer.GraphicsLayer
@@ -52,12 +50,9 @@ internal class ThemeAnimationNode<T>(
     private var currentImageBitmap: ImageBitmap? = null
     private var prevTheme: T? = null
 
-    private var latestInteractionPosition: Offset? = null
-
     override fun onAttach() {
         super.onAttach()
         observeRecordRequests()
-        observeInteractionPositions()
     }
 
     private var recordRequestsJob: Job? = null
@@ -88,7 +83,6 @@ internal class ThemeAnimationNode<T>(
             runAnimation()
         }
         observeRecordRequests()
-        observeInteractionPositions()
     }
 
     private var animationObserverJob: Job? = null
@@ -123,7 +117,7 @@ internal class ThemeAnimationNode<T>(
                 drawAnimationLayer(
                     image = new,
                     progress = progress,
-                    pressPosition = latestInteractionPosition
+                    pressPosition = state.buttonPosition
                 )
             }
         } else {
@@ -144,15 +138,5 @@ internal class ThemeAnimationNode<T>(
         }
     }
 
-    private var interactionObserverJob: Job? = null
-    private fun observeInteractionPositions() {
-        interactionObserverJob?.cancel()
-        interactionObserverJob = coroutineScope.launch {
-            state.interactionSource.interactions.collect { interaction ->
-                if (interaction is PressInteraction.Release) {
-                    latestInteractionPosition = interaction.press.pressPosition
-                }
-            }
-        }
-    }
+
 }

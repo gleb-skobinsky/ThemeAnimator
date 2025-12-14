@@ -26,6 +26,7 @@ class ThemeAnimationState(
     initialIsDark: Boolean,
     private val coroutineScope: CoroutineScope,
     internal val animationSpec: AnimationSpec<Float>,
+    internal val format: ThemeAnimationFormat,
 ) {
     var isDark: Boolean by mutableStateOf(initialIsDark)
         private set
@@ -45,16 +46,19 @@ class ThemeAnimationState(
 fun rememberThemeAnimationState(
     animationSpec: AnimationSpec<Float> = tween(300),
     initialIsDark: Boolean = isSystemInDarkTheme(),
+    format: ThemeAnimationFormat = ThemeAnimationFormat.Sliding,
 ): ThemeAnimationState {
     val coroutineScope = rememberCoroutineScope()
     return remember(
         coroutineScope,
-        animationSpec
+        animationSpec,
+        format
     ) {
         ThemeAnimationState(
             initialIsDark = initialIsDark,
             coroutineScope = coroutineScope,
-            animationSpec = animationSpec
+            animationSpec = animationSpec,
+            format = format
         )
     }
 }

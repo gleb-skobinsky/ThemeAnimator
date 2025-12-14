@@ -108,12 +108,14 @@ internal class ThemeAnimationNode<T>(
     override fun ContentDrawScope.draw() {
         val old = prevImageBitmap
         val new = currentImageBitmap
-        val alpha = animationProgress
+        val progress = animationProgress
         val isAnim = isAnimating
 
         if (old != null && new != null && isAnim) {
-            drawImage(old, alpha = 1f)
-            drawImage(new, alpha = alpha)
+            drawImage(old)
+            with(state.format) {
+                drawAnimationLayer(new, progress)
+            }
         } else {
             // Record content to graphicsLayer for future snapshots
             graphicsLayer.record {

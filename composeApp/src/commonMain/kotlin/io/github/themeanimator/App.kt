@@ -1,5 +1,6 @@
 package io.github.themeanimator
 
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -29,7 +30,9 @@ import androidx.compose.ui.unit.dp
 @Composable
 @Preview
 fun App() {
-    val animationState = rememberThemeAnimationState()
+    val animationState = rememberThemeAnimationState(
+        animationSpec = tween(1000)
+    )
     val theme = if (animationState.isDark) {
         darkColorScheme()
     } else {

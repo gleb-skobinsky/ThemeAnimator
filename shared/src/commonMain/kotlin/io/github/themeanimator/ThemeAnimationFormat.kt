@@ -1,6 +1,6 @@
 package io.github.themeanimator
 
-import androidx.compose.runtime.Stable
+import androidx.compose.runtime.Immutable
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.center
 import androidx.compose.ui.graphics.ImageBitmap
@@ -8,9 +8,10 @@ import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.graphics.drawscope.clipPath
 import androidx.compose.ui.graphics.drawscope.clipRect
+import kotlin.math.hypot
 import kotlin.math.max
 
-@Stable
+@Immutable
 interface ThemeAnimationFormat {
     fun DrawScope.drawAnimationLayer(
         image: ImageBitmap,
@@ -75,10 +76,18 @@ interface ThemeAnimationFormat {
             progress: Float,
             pressPosition: Offset?,
         ) {
-            val originalRadius = max(size.width, size.height)
-            val radius = originalRadius * progress
-
             val center = pressPosition ?: size.center
+
+            // Find the farthest corner by taking the opposite corner
+            // If press is on left half, farthest corner is on right; if on right, it's on left
+            // Same logic applies for top/bottom
+            val farthestX = if (center.x < size.width / 2) size.width else 0f
+            val farthestY = if (center.y < size.height / 2) size.height else 0f
+
+            // Calculate distance to that farthest corner
+            val maxRadius = hypot(farthestX - center.x, farthestY - center.y)
+            val radius = maxRadius * progress
+
             val circlePath = Path().apply {
                 addOval(
                     androidx.compose.ui.geometry.Rect(

@@ -2,24 +2,33 @@ package io.github.themeanimator
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.CompositionLocal
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.drawWithContent
+import androidx.compose.ui.graphics.layer.drawLayer
+import androidx.compose.ui.graphics.rememberGraphicsLayer
 
 @Composable
 fun <T> ThemeAnimationScope(
-    currentTheme: T,
-    initialTheme: T,
-    themeProvider: CompositionLocal<T>,
+    theme: T,
     content: @Composable () -> Unit,
 ) {
+    val graphicsLayer = rememberGraphicsLayer()
     val animationState = rememberThemeAnimationState(
-        initialTheme = initialTheme
+        theme = theme,
+        graphicsLayer = graphicsLayer
     )
-    Box(Modifier.themeAnimation(animationState, content)) {
+    Box(
+        modifier = Modifier.drawWithContent {
+            graphicsLayer.record {
+                this@drawWithContent.drawContent()
+            }
+            drawLayer(graphicsLayer)
+        }.themeAnimation(animationState, content)
+    ) {
         content()
     }
-    LaunchedEffect(currentTheme) {
-        animationState.updateCurrentTheme(currentTheme)
+    LaunchedEffect(theme) {
+        animationState.updateCurrentTheme(theme)
     }
 }

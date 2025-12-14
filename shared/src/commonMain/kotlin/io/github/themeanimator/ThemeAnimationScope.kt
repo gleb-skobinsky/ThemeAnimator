@@ -18,6 +18,11 @@ fun <T> ThemeAnimationScope(
         theme = theme,
         graphicsLayer = graphicsLayer
     )
+
+    LaunchedEffect(theme) {
+        animationState.updateCurrentTheme(theme)
+    }
+
     Box(
         modifier = Modifier.drawWithContent {
             graphicsLayer.record {
@@ -27,8 +32,5 @@ fun <T> ThemeAnimationScope(
         }.themeAnimation(animationState, content)
     ) {
         content()
-    }
-    LaunchedEffect(theme) {
-        animationState.updateCurrentTheme(theme)
     }
 }

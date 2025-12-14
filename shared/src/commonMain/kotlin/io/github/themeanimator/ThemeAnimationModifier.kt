@@ -7,6 +7,7 @@ import androidx.compose.ui.node.DrawModifierNode
 import androidx.compose.ui.node.ModifierNodeElement
 import androidx.compose.ui.node.invalidateDraw
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.flow.merge
 import kotlinx.coroutines.launch
 
 internal fun <T> Modifier.themeAnimation(
@@ -50,7 +51,7 @@ internal class ThemeAnimationNode<T>(
     private fun observeTheme() {
         animationObserverJob?.cancel()
         animationObserverJob = coroutineScope.launch {
-            state.animationProgress.collect {
+            merge(state.animationProgress, state.isAnimating).collect {
                 invalidateDraw()
             }
         }
@@ -60,15 +61,16 @@ internal class ThemeAnimationNode<T>(
         val old = state.prevImageBitmap
         val new = state.currentImageBitmap
         val alpha = state.animationProgress.value
+        val isAnimating = state.isAnimating.value
 
-        if (old != null && state.isAnimating) {
+        if (old != null && isAnimating) {
             drawImage(old, alpha = 1f)
         }
-        if (new != null && state.isAnimating) {
+        if (new != null && isAnimating) {
             drawImage(new, alpha = alpha)
         }
 
-        if (!state.isAnimating || old == null) {
+        if (!isAnimating || old == null) {
             drawContent()
         }
     }

@@ -25,8 +25,8 @@ class ThemeAnimationState<T>(
     private val _animationProgress = MutableStateFlow(0f)
     val animationProgress = _animationProgress.asStateFlow()
 
-    var isAnimating: Boolean = false
-        private set
+    private val _isAnimating = MutableStateFlow(false)
+    val isAnimating = _isAnimating.asStateFlow()
 
     internal fun updateCurrentTheme(newTheme: T) {
         _currentTheme.value = newTheme
@@ -39,8 +39,8 @@ class ThemeAnimationState<T>(
 
     init {
         coroutineScope.launch {
-            currentTheme.drop(1).collectLatest {
-                isAnimating = true
+            currentTheme.collectLatest {
+                _isAnimating.value = true
                 prevImageBitmap = currentImageBitmap
                 currentImageBitmap = graphicsLayer.toImageBitmap()
                 animate(
@@ -50,7 +50,7 @@ class ThemeAnimationState<T>(
                 ) { value, _ ->
                     _animationProgress.value = value
                 }
-                isAnimating = false
+                _isAnimating.value = false
             }
         }
     }

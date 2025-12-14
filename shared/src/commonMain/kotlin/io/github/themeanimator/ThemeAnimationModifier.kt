@@ -137,6 +137,4 @@ internal class ThemeAnimationNode<T>(
             currentImageBitmap = image
         }
     }
-
-
 }

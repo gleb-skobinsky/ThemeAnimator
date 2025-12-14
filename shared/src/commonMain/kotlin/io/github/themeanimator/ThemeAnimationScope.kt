@@ -29,7 +29,7 @@ fun <T> ThemeAnimationScope(
                 this@drawWithContent.drawContent()
             }
             drawLayer(graphicsLayer)
-        }.themeAnimation(animationState, content)
+        }.themeAnimation(animationState)
     ) {
         content()
     }

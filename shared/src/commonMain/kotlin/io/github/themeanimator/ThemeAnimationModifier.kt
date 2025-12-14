@@ -1,6 +1,5 @@
 package io.github.themeanimator
 
-import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.drawscope.ContentDrawScope
 import androidx.compose.ui.node.DrawModifierNode
@@ -12,25 +11,22 @@ import kotlinx.coroutines.launch
 
 internal fun <T> Modifier.themeAnimation(
     state: ThemeAnimationState<T>,
-    content: @Composable () -> Unit,
-) = this then ThemeAnimationElement(state, content)
+) = this then ThemeAnimationElement(state)
 
 internal data class ThemeAnimationElement<T>(
     val state: ThemeAnimationState<T>,
-    val content: @Composable () -> Unit,
 ) : ModifierNodeElement<ThemeAnimationNode<T>>() {
     override fun create(): ThemeAnimationNode<T> {
-        return ThemeAnimationNode(state, content)
+        return ThemeAnimationNode(state)
     }
 
     override fun update(node: ThemeAnimationNode<T>) {
-        node.updateState(newState = state, newContent = content)
+        node.updateState(state)
     }
 }
 
 internal class ThemeAnimationNode<T>(
     private var state: ThemeAnimationState<T>,
-    private var currentContent: @Composable () -> Unit,
 ) : Modifier.Node(), DrawModifierNode {
 
     override fun onAttach() {
@@ -40,10 +36,8 @@ internal class ThemeAnimationNode<T>(
 
     fun updateState(
         newState: ThemeAnimationState<T>,
-        newContent: @Composable () -> Unit,
     ) {
         state = newState
-        currentContent = newContent
         observeTheme()
     }
 

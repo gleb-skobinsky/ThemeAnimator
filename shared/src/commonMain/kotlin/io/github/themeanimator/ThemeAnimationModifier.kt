@@ -7,7 +7,12 @@ import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.drawscope.ContentDrawScope
 import androidx.compose.ui.node.DrawModifierNode
 import androidx.compose.ui.node.ModifierNodeElement
+import androidx.compose.ui.unit.IntSize
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
 internal fun <T> Modifier.themeAnimation(
@@ -32,12 +37,21 @@ internal class ThemeAnimationNode<T>(
     private var currentState: ThemeAnimationState<T>,
     private var currentContent: @Composable () -> Unit,
 ) : Modifier.Node(), DrawModifierNode {
-    private val canvas = Canvas(ImageBitmap())
+    private val size = MutableStateFlow(IntSize.Zero)
+
+    private val canvas = size.map {
+        Canvas(ImageBitmap(it.width, it.height))
+    }.stateIn(
+        scope = coroutineScope,
+        started = SharingStarted.Lazily,
+        initialValue = InitialCanvas
+    )
+
     override fun onAttach() {
         super.onAttach()
         coroutineScope.launch {
             currentState.currentTheme.collectLatest { theme ->
-
+                canvas.value
             }
         }
     }
@@ -53,5 +67,9 @@ internal class ThemeAnimationNode<T>(
 
     override fun ContentDrawScope.draw() {
 
+    }
+
+    private companion object {
+        val InitialCanvas = Canvas(ImageBitmap(0, 0))
     }
 }

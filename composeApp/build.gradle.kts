@@ -103,7 +103,7 @@ compose.desktop {
 
         nativeDistributions {
             targetFormats(TargetFormat.Dmg, TargetFormat.Msi, TargetFormat.Deb)
-            packageName = "io.github.themeanimator"
+            packageName = "io.github.themeanimator.demo"
             packageVersion = "1.0.0"
         }
     }

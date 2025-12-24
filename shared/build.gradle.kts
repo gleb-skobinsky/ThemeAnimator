@@ -1,11 +1,15 @@
 import org.jetbrains.kotlin.gradle.ExperimentalWasmDsl
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+import org.jetbrains.kotlin.konan.properties.Properties
+import java.io.FileInputStream
 
 plugins {
     alias(libs.plugins.kotlinMultiplatform)
     alias(libs.plugins.androidLibrary)
     alias(libs.plugins.composeMultiplatform)
     alias(libs.plugins.composeCompiler)
+    alias(libs.plugins.mavenPublish)
+    id("signing")
 }
 
 kotlin {
@@ -72,4 +76,50 @@ android {
 
 dependencies {
     debugImplementation(compose.uiTooling)
+}
+
+fun loadProperties(): Properties? {
+    val keystorePropertiesFile = rootProject.file("local.properties")
+    if (!keystorePropertiesFile.exists()) {
+        return null
+    }
+    val keystoreProperties = Properties()
+    keystoreProperties.load(FileInputStream(keystorePropertiesFile))
+    return keystoreProperties
+}
+
+mavenPublishing {
+    publishToMavenCentral()
+
+    signAllPublications()
+
+    coordinates("io.github.gleb-skobinsky", "themeanimator", "0.0.1")
+
+    pom {
+        name = "ThemeAnimator"
+        description = "Compose multiplarform theme animation library"
+        inceptionYear = "2025"
+        url = "https://github.com/gleb-skobinsky/ThemeAnimator"
+
+        licenses {
+            license {
+                name = "The Apache License, Version 2.0"
+                url = "https://www.apache.org/licenses/LICENSE-2.0.txt"
+                distribution = "https://www.apache.org/licenses/LICENSE-2.0.txt"
+            }
+        }
+        developers {
+            developer {
+                id = "skobinsky"
+                name = "Gleb Gutnik"
+                url = "https://github.com/gleb-skobinsky"
+            }
+        }
+        scm {
+            url = "https://github.com/gleb-skobinsky/ThemeAnimator"
+            connection = "scm:git:git://github.com/gleb-skobinsky/ThemeAnimator.git"
+            developerConnection =
+                "scm:git:ssh://git@github.com/gleb-skobinsky/ThemeAnimator.git"
+        }
+    }
 }

@@ -120,7 +120,6 @@ interface ThemeAnimationFormat {
             }
 
             clipPath(circlePath) {
-//                drawImage(image)
                 this@drawAnimationLayer.drawContent()
             }
         }

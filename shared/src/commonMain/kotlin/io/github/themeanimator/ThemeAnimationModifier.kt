@@ -44,7 +44,6 @@ internal class ThemeAnimationNode<T>(
     private var state: ThemeAnimationState,
 ) : Modifier.Node(), DrawModifierNode, LayoutAwareModifierNode {
 
-    private var isAnimating = false
     private var animationProgress = 0f
     private var prevImageBitmap: ImageBitmap? = null
     private var currentImageBitmap: ImageBitmap? = null
@@ -88,7 +87,7 @@ internal class ThemeAnimationNode<T>(
     private var animationObserverJob: Job? = null
     private fun runAnimation() {
         animationProgress = 0f
-        isAnimating = true
+        state.isAnimating = true
         animationObserverJob?.cancel()
         animationObserverJob = coroutineScope.launch {
             prevImageBitmap = currentImageBitmap
@@ -101,7 +100,7 @@ internal class ThemeAnimationNode<T>(
                 animationProgress = value
                 invalidateDraw()
             }
-            isAnimating = false
+            state.isAnimating = false
             invalidateDraw()
         }
     }
@@ -109,7 +108,7 @@ internal class ThemeAnimationNode<T>(
     override fun ContentDrawScope.draw() {
         val old = prevImageBitmap
         val progress = animationProgress
-        val isAnim = isAnimating
+        val isAnim = state.isAnimating
         val position = state.buttonPosition
 
         if (old != null && isAnim) {

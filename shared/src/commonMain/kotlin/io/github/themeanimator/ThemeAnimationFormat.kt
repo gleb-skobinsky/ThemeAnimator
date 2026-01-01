@@ -1,5 +1,6 @@
 package io.github.themeanimator
 
+import androidx.collection.LruCache
 import androidx.compose.runtime.Immutable
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.center
@@ -10,6 +11,8 @@ import androidx.compose.ui.graphics.drawscope.clipPath
 import androidx.compose.ui.graphics.drawscope.clipRect
 import kotlin.math.hypot
 import kotlin.math.max
+import androidx.compose.ui.geometry.Rect
+import androidx.compose.ui.geometry.Size
 
 @Immutable
 interface ThemeAnimationFormat {
@@ -44,7 +47,7 @@ interface ThemeAnimationFormat {
             val center = size.center
             val circlePath = Path().apply {
                 addOval(
-                    androidx.compose.ui.geometry.Rect(
+                    Rect(
                         center = center,
                         radius = radius
                     )
@@ -71,6 +74,23 @@ interface ThemeAnimationFormat {
     }
 
     object CircularAroundPress : ThemeAnimationFormat {
+
+        private val maxRadiusCache = LruCache<Pair<Offset, Size>, Float>(3)
+
+        private inline fun <K: Any, V: Any> LruCache<K, V>.getOrPut(
+            key: K,
+            onCreate: (K) -> V
+        ): V {
+            val value = get(key)
+            if (value != null) {
+                return value
+            }
+            val newValue = onCreate(key)
+            put(key, newValue)
+            return newValue
+        }
+
+
         override fun DrawScope.drawAnimationLayer(
             image: ImageBitmap,
             progress: Float,
@@ -78,19 +98,19 @@ interface ThemeAnimationFormat {
         ) {
             val center = pressPosition ?: size.center
 
-            // Find the farthest corner by taking the opposite corner
-            // If press is on left half, farthest corner is on right; if on right, it's on left
-            // Same logic applies for top/bottom
-            val farthestX = if (center.x < size.width / 2) size.width else 0f
-            val farthestY = if (center.y < size.height / 2) size.height else 0f
+            val maxRadius = maxRadiusCache.getOrPut(
+                center to size
+            ) { (center, size) ->
+                val farthestX = if (center.x < size.width / 2) size.width else 0f
+                val farthestY = if (center.y < size.height / 2) size.height else 0f
+                hypot(farthestX - center.x, farthestY - center.y)
+            }
 
-            // Calculate distance to that farthest corner
-            val maxRadius = hypot(farthestX - center.x, farthestY - center.y)
             val radius = maxRadius * progress
 
             val circlePath = Path().apply {
                 addOval(
-                    androidx.compose.ui.geometry.Rect(
+                    Rect(
                         center = center,
                         radius = radius
                     )

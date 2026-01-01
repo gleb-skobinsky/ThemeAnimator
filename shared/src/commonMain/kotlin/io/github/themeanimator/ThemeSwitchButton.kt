@@ -3,10 +3,8 @@ package io.github.themeanimator
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.LocalRippleConfiguration
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.Stable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -21,25 +19,23 @@ fun ThemeSwitchButton(
     lightThemeIcon: ImageVector = SunIcon,
     modifier: Modifier = Modifier,
 ) {
-    CompositionLocalProvider(LocalRippleConfiguration provides null) {
-        IconButton(
-            interactionSource = animationState.interactionSource,
-            onClick = {
-                animationState.toggleTheme()
+    IconButton(
+        interactionSource = animationState.interactionSource,
+        onClick = {
+            animationState.toggleTheme()
+        },
+        modifier = modifier.themeAnimationButtonTarget(animationState)
+    ) {
+        Icon(
+            imageVector = if (animationState.isDark) {
+                lightThemeIcon
+            } else {
+                darkThemeIcon
             },
-            modifier = modifier.themeAnimationButtonTarget(animationState)
-        ) {
-            Icon(
-                imageVector = if (animationState.isDark) {
-                    lightThemeIcon
-                } else {
-                    darkThemeIcon
-                },
-                contentDescription = "Moon icon",
-                tint = MaterialTheme.colorScheme.primary,
-                modifier = Modifier.size(20.dp)
-            )
-        }
+            contentDescription = "Moon icon",
+            tint = MaterialTheme.colorScheme.primary,
+            modifier = Modifier.size(20.dp)
+        )
     }
 }
 

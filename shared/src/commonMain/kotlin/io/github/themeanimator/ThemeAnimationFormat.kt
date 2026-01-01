@@ -3,41 +3,45 @@ package io.github.themeanimator
 import androidx.collection.LruCache
 import androidx.compose.runtime.Immutable
 import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.geometry.center
-import androidx.compose.ui.graphics.ImageBitmap
-import androidx.compose.ui.graphics.Path
-import androidx.compose.ui.graphics.drawscope.DrawScope
-import androidx.compose.ui.graphics.drawscope.clipPath
-import androidx.compose.ui.graphics.drawscope.clipRect
-import kotlin.math.hypot
-import kotlin.math.max
 import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.geometry.Size
+import androidx.compose.ui.geometry.center
+import androidx.compose.ui.geometry.toRect
+import androidx.compose.ui.graphics.Paint
+import androidx.compose.ui.graphics.Path
+import androidx.compose.ui.graphics.drawscope.ContentDrawScope
+import androidx.compose.ui.graphics.drawscope.clipPath
+import androidx.compose.ui.graphics.drawscope.clipRect
+import androidx.compose.ui.graphics.drawscope.drawIntoCanvas
+import kotlin.math.hypot
+import kotlin.math.max
 
 @Immutable
 interface ThemeAnimationFormat {
-    fun DrawScope.drawAnimationLayer(
-        image: ImageBitmap,
+    fun ContentDrawScope.drawAnimationLayer(
         progress: Float,
         pressPosition: Offset?,
     )
 
     object Crossfade : ThemeAnimationFormat {
-        override fun DrawScope.drawAnimationLayer(
-            image: ImageBitmap,
+        override fun ContentDrawScope.drawAnimationLayer(
             progress: Float,
             pressPosition: Offset?,
         ) {
-            drawImage(
-                image = image,
-                alpha = progress
-            )
+            drawIntoCanvas { canvas ->
+                val paint = Paint().apply {
+                    alpha = progress
+                }
+
+                canvas.saveLayer(size.toRect(), paint)
+                drawContent()
+                canvas.restore()
+            }
         }
     }
 
     object Circular : ThemeAnimationFormat {
-        override fun DrawScope.drawAnimationLayer(
-            image: ImageBitmap,
+        override fun ContentDrawScope.drawAnimationLayer(
             progress: Float,
             pressPosition: Offset?,
         ) {
@@ -55,20 +59,19 @@ interface ThemeAnimationFormat {
             }
 
             clipPath(circlePath) {
-                drawImage(image)
+                this@drawAnimationLayer.drawContent()
             }
         }
     }
 
     object Sliding : ThemeAnimationFormat {
-        override fun DrawScope.drawAnimationLayer(
-            image: ImageBitmap,
+        override fun ContentDrawScope.drawAnimationLayer(
             progress: Float,
             pressPosition: Offset?,
         ) {
             val clipWidth = size.width * progress
             clipRect(right = clipWidth) {
-                drawImage(image)
+                this@drawAnimationLayer.drawContent()
             }
         }
     }
@@ -77,7 +80,7 @@ interface ThemeAnimationFormat {
 
         private val maxRadiusCache = LruCache<Pair<Offset, Size>, Float>(3)
 
-        private inline fun <K: Any, V: Any> LruCache<K, V>.getOrPut(
+        private inline fun <K : Any, V : Any> LruCache<K, V>.getOrPut(
             key: K,
             onCreate: (K) -> V
         ): V {
@@ -91,8 +94,7 @@ interface ThemeAnimationFormat {
         }
 
 
-        override fun DrawScope.drawAnimationLayer(
-            image: ImageBitmap,
+        override fun ContentDrawScope.drawAnimationLayer(
             progress: Float,
             pressPosition: Offset?,
         ) {
@@ -118,7 +120,8 @@ interface ThemeAnimationFormat {
             }
 
             clipPath(circlePath) {
-                drawImage(image)
+//                drawImage(image)
+                this@drawAnimationLayer.drawContent()
             }
         }
     }

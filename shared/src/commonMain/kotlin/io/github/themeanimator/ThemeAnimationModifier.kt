@@ -87,6 +87,7 @@ internal class ThemeAnimationNode<T>(
 
     private var animationObserverJob: Job? = null
     private fun runAnimation() {
+        animationProgress = 0f
         isAnimating = true
         animationObserverJob?.cancel()
         animationObserverJob = coroutineScope.launch {
@@ -107,17 +108,16 @@ internal class ThemeAnimationNode<T>(
 
     override fun ContentDrawScope.draw() {
         val old = prevImageBitmap
-        val new = currentImageBitmap
         val progress = animationProgress
         val isAnim = isAnimating
+        val position = state.buttonPosition
 
-        if (old != null && new != null && isAnim) {
+        if (old != null && isAnim) {
             drawImage(old)
             with(state.format) {
                 drawAnimationLayer(
-                    image = new,
                     progress = progress,
-                    pressPosition = state.buttonPosition
+                    pressPosition = position
                 )
             }
         } else {

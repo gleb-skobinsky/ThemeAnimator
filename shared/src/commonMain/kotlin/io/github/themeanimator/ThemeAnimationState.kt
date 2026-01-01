@@ -12,6 +12,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.geometry.Rect
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.firstOrNull
@@ -36,8 +37,8 @@ class ThemeAnimationState(
     internal var buttonPosition: Offset? by mutableStateOf(null)
         private set
 
-    fun updateButtonPosition(x: Float, y: Float) {
-        buttonPosition = Offset(x, y)
+    fun updateButtonPosition(position: Rect) {
+        buttonPosition = position.center
     }
 
     fun toggleTheme() {

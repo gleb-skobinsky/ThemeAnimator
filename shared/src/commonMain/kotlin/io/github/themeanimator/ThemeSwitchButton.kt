@@ -19,34 +19,6 @@ import androidx.compose.ui.window.Popup
 import androidx.compose.ui.window.PopupPositionProvider
 import androidx.compose.ui.window.PopupProperties
 
-private class ThemeSwitchPositionProvider(
-    private val state: ThemeAnimationState,
-) : PopupPositionProvider {
-    override fun calculatePosition(
-        anchorBounds: IntRect,
-        windowSize: IntSize,
-        layoutDirection: LayoutDirection,
-        popupContentSize: IntSize,
-    ): IntOffset {
-        // Position the popup below the anchor aligned horizontally with the anchor's
-        // center.
-        val offset = IntOffset(
-            x = anchorBounds.left + anchorBounds.width / 2,
-            y = anchorBounds.top + anchorBounds.height * 2,
-        )
-        state.updateButtonPosition(
-            Rect(
-                Offset(
-                    (anchorBounds.left - popupContentSize.width).toFloat(),
-                    anchorBounds.top.toFloat()
-                ),
-                popupContentSize.toSize()
-            )
-        )
-        return offset
-    }
-}
-
 val DefaultButtonIcon = ThemeSwitchIcon.DuoVector(
     darkVector = SunIcon,
     lightVector = MoonIcon
@@ -92,5 +64,33 @@ private fun ThemeSwitchButtonBase(
             contentDescription = "Theme switch icon",
             modifier = Modifier.size(20.dp)
         )
+    }
+}
+
+private class ThemeSwitchPositionProvider(
+    private val state: ThemeAnimationState,
+) : PopupPositionProvider {
+    override fun calculatePosition(
+        anchorBounds: IntRect,
+        windowSize: IntSize,
+        layoutDirection: LayoutDirection,
+        popupContentSize: IntSize,
+    ): IntOffset {
+        // Position the popup below the anchor aligned horizontally with the anchor's
+        // center.
+        val offset = IntOffset(
+            x = anchorBounds.left + anchorBounds.width / 2,
+            y = anchorBounds.top + anchorBounds.height * 2,
+        )
+        state.updateButtonPosition(
+            Rect(
+                Offset(
+                    (anchorBounds.left - popupContentSize.width).toFloat(),
+                    anchorBounds.top.toFloat()
+                ),
+                popupContentSize.toSize()
+            )
+        )
+        return offset
     }
 }

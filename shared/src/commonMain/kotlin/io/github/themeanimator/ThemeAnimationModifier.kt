@@ -107,14 +107,16 @@ internal class ThemeAnimationNode<T>(
 
     override fun ContentDrawScope.draw() {
         val old = prevImageBitmap
+        val new = currentImageBitmap
         val progress = animationProgress
         val isAnim = state.isAnimating
         val position = state.buttonPosition
 
-        if (old != null && isAnim) {
+        if (old != null && new != null && isAnim) {
             drawImage(old)
             with(state.format) {
                 drawAnimationLayer(
+                    image = new,
                     progress = progress,
                     pressPosition = position
                 )

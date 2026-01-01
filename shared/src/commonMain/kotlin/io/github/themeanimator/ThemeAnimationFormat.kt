@@ -6,42 +6,38 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.geometry.center
-import androidx.compose.ui.geometry.toRect
-import androidx.compose.ui.graphics.Paint
+import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.drawscope.ContentDrawScope
 import androidx.compose.ui.graphics.drawscope.clipPath
 import androidx.compose.ui.graphics.drawscope.clipRect
-import androidx.compose.ui.graphics.drawscope.drawIntoCanvas
 import kotlin.math.hypot
 import kotlin.math.max
 
 @Immutable
 interface ThemeAnimationFormat {
     fun ContentDrawScope.drawAnimationLayer(
+        image: ImageBitmap,
         progress: Float,
         pressPosition: Offset?,
     )
 
     object Crossfade : ThemeAnimationFormat {
         override fun ContentDrawScope.drawAnimationLayer(
+            image: ImageBitmap,
             progress: Float,
             pressPosition: Offset?,
         ) {
-            drawIntoCanvas { canvas ->
-                val paint = Paint().apply {
-                    alpha = progress
-                }
-
-                canvas.saveLayer(size.toRect(), paint)
-                drawContent()
-                canvas.restore()
-            }
+            drawImage(
+                image = image,
+                alpha = progress
+            )
         }
     }
 
     object Circular : ThemeAnimationFormat {
         override fun ContentDrawScope.drawAnimationLayer(
+            image: ImageBitmap,
             progress: Float,
             pressPosition: Offset?,
         ) {
@@ -59,19 +55,20 @@ interface ThemeAnimationFormat {
             }
 
             clipPath(circlePath) {
-                this@drawAnimationLayer.drawContent()
+                drawImage(image)
             }
         }
     }
 
     object Sliding : ThemeAnimationFormat {
         override fun ContentDrawScope.drawAnimationLayer(
+            image: ImageBitmap,
             progress: Float,
             pressPosition: Offset?,
         ) {
             val clipWidth = size.width * progress
             clipRect(right = clipWidth) {
-                this@drawAnimationLayer.drawContent()
+                drawImage(image)
             }
         }
     }
@@ -95,6 +92,7 @@ interface ThemeAnimationFormat {
 
 
         override fun ContentDrawScope.drawAnimationLayer(
+            image: ImageBitmap,
             progress: Float,
             pressPosition: Offset?,
         ) {
@@ -120,7 +118,7 @@ interface ThemeAnimationFormat {
             }
 
             clipPath(circlePath) {
-                this@drawAnimationLayer.drawContent()
+                drawImage(image)
             }
         }
     }

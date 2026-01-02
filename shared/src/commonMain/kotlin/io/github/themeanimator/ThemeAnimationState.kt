@@ -47,12 +47,26 @@ class ThemeAnimationState(
 }
 
 /**
- * Creates
+ * Creates a state holder for theme toggle animations with customizable
+ * animation characteristics and behavior. The state is remembered across recompositions.
+ *
+ * @param animationSpec the animation specification for the theme transition.
+ * Defaults to a 300ms tween animation.
+ * @param isDark the initial theme state. `true` for dark theme, `false` for light theme.
+ * @param format the format/style of the theme animation.
+ * Defaults to [ThemeAnimationFormat.Sliding]. For more styles, see [ThemeAnimationFormat].
+ * @param useDynamicContent if set to `true`, the target content (that is, the theme
+ * to which the theme is toggled) will be drawn dynamically and any changes to it, including scrolling,
+ * animations etc. will be preserved. Note that the abandoned theme will still be drawn statically, leading to inconsistency
+ * between the target and abandoned parts of the animation. Defaults to `false`.
+ *
+ * @return A remembered [ThemeAnimationState] instance that can be used to control
+ * theme animations within a Composable.
  */
 @Composable
 fun rememberThemeAnimationState(
     animationSpec: AnimationSpec<Float> = tween(300),
-    initialIsDark: Boolean = isSystemInDarkTheme(),
+    isDark: Boolean = isSystemInDarkTheme(),
     format: ThemeAnimationFormat = ThemeAnimationFormat.Sliding,
     useDynamicContent: Boolean = false,
 ): ThemeAnimationState {
@@ -64,7 +78,7 @@ fun rememberThemeAnimationState(
         format
     ) {
         ThemeAnimationState(
-            initialIsDark = initialIsDark,
+            initialIsDark = isDark,
             coroutineScope = coroutineScope,
             animationSpec = animationSpec,
             format = format,

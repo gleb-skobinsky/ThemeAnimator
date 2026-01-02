@@ -30,9 +30,6 @@ class ThemeAnimationState(
     var isDark: Boolean by mutableStateOf(initialIsDark)
         private set
 
-    var isAnimating: Boolean by mutableStateOf(false)
-        internal set
-
     internal val requestRecord = MutableStateFlow(RecordStatus.Initial)
 
     internal var buttonPosition: Offset? by mutableStateOf(null)

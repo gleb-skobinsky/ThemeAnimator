@@ -49,6 +49,8 @@ internal class ThemeAnimationNode<T>(
     private var currentImageBitmap: ImageBitmap? = null
     private var prevTheme: T? = null
 
+    private var isAnimating = false
+
     override fun onAttach() {
         super.onAttach()
         observeRecordRequests()
@@ -87,7 +89,7 @@ internal class ThemeAnimationNode<T>(
     private var animationObserverJob: Job? = null
     private fun runAnimation() {
         animationProgress = 0f
-        state.isAnimating = true
+        isAnimating = true
         animationObserverJob?.cancel()
         animationObserverJob = coroutineScope.launch {
             prevImageBitmap = currentImageBitmap
@@ -100,7 +102,7 @@ internal class ThemeAnimationNode<T>(
                 animationProgress = value
                 invalidateDraw()
             }
-            state.isAnimating = false
+            isAnimating = false
             invalidateDraw()
         }
     }
@@ -109,7 +111,7 @@ internal class ThemeAnimationNode<T>(
         val old = prevImageBitmap
         val new = currentImageBitmap
         val progress = animationProgress
-        val isAnim = state.isAnimating
+        val isAnim = isAnimating
         val position = state.buttonPosition
 
         if (old != null && new != null && isAnim) {

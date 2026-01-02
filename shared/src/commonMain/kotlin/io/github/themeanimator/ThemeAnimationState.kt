@@ -2,7 +2,6 @@ package io.github.themeanimator
 
 import androidx.compose.animation.core.AnimationSpec
 import androidx.compose.animation.core.tween
-import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Stable
@@ -24,7 +23,6 @@ class ThemeAnimationState(
     private val coroutineScope: CoroutineScope,
     internal val animationSpec: AnimationSpec<Float>,
     internal val format: ThemeAnimationFormat,
-    internal val interactionSource: MutableInteractionSource,
     internal val useDynamicContent: Boolean,
 ) {
     var isDark: Boolean by mutableStateOf(initialIsDark)
@@ -48,13 +46,15 @@ class ThemeAnimationState(
     }
 }
 
+/**
+ * Creates
+ */
 @Composable
 fun rememberThemeAnimationState(
     animationSpec: AnimationSpec<Float> = tween(300),
     initialIsDark: Boolean = isSystemInDarkTheme(),
     format: ThemeAnimationFormat = ThemeAnimationFormat.Sliding,
     useDynamicContent: Boolean = false,
-    interactionSource: MutableInteractionSource = remember { MutableInteractionSource() }
 ): ThemeAnimationState {
     val coroutineScope = rememberCoroutineScope()
     return remember(
@@ -68,7 +68,6 @@ fun rememberThemeAnimationState(
             coroutineScope = coroutineScope,
             animationSpec = animationSpec,
             format = format,
-            interactionSource = interactionSource,
             useDynamicContent = useDynamicContent
         )
     }

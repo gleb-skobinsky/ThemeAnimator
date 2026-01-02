@@ -25,6 +25,7 @@ class ThemeAnimationState(
     internal val animationSpec: AnimationSpec<Float>,
     internal val format: ThemeAnimationFormat,
     internal val interactionSource: MutableInteractionSource,
+    internal val useDynamicContent: Boolean,
 ) {
     var isDark: Boolean by mutableStateOf(initialIsDark)
         private set
@@ -55,12 +56,14 @@ fun rememberThemeAnimationState(
     animationSpec: AnimationSpec<Float> = tween(300),
     initialIsDark: Boolean = isSystemInDarkTheme(),
     format: ThemeAnimationFormat = ThemeAnimationFormat.Sliding,
+    useDynamicContent: Boolean = false,
     interactionSource: MutableInteractionSource = remember { MutableInteractionSource() }
 ): ThemeAnimationState {
     val coroutineScope = rememberCoroutineScope()
     return remember(
         coroutineScope,
         animationSpec,
+        useDynamicContent,
         format
     ) {
         ThemeAnimationState(
@@ -68,7 +71,8 @@ fun rememberThemeAnimationState(
             coroutineScope = coroutineScope,
             animationSpec = animationSpec,
             format = format,
-            interactionSource = interactionSource
+            interactionSource = interactionSource,
+            useDynamicContent = useDynamicContent
         )
     }
 }

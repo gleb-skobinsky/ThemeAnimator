@@ -118,7 +118,8 @@ internal class ThemeAnimationNode<T>(
                 drawAnimationLayer(
                     image = new,
                     progress = progress,
-                    pressPosition = position
+                    pressPosition = position,
+                    useDynamicContent = state.useDynamicContent
                 )
             }
         } else {

@@ -6,11 +6,14 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.geometry.center
+import androidx.compose.ui.geometry.toRect
 import androidx.compose.ui.graphics.ImageBitmap
+import androidx.compose.ui.graphics.Paint
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.drawscope.ContentDrawScope
 import androidx.compose.ui.graphics.drawscope.clipPath
 import androidx.compose.ui.graphics.drawscope.clipRect
+import androidx.compose.ui.graphics.drawscope.drawIntoCanvas
 import kotlin.math.hypot
 import kotlin.math.max
 
@@ -20,6 +23,7 @@ interface ThemeAnimationFormat {
         image: ImageBitmap,
         progress: Float,
         pressPosition: Offset?,
+        useDynamicContent: Boolean,
     )
 
     object Crossfade : ThemeAnimationFormat {
@@ -27,11 +31,24 @@ interface ThemeAnimationFormat {
             image: ImageBitmap,
             progress: Float,
             pressPosition: Offset?,
+            useDynamicContent: Boolean,
         ) {
-            drawImage(
-                image = image,
-                alpha = progress
-            )
+            if (useDynamicContent) {
+                drawIntoCanvas { canvas ->
+                    val paint = Paint().apply {
+                        alpha = progress
+                    }
+
+                    canvas.saveLayer(size.toRect(), paint)
+                    drawContent()
+                    canvas.restore()
+                }
+            } else {
+                drawImage(
+                    image = image,
+                    alpha = progress
+                )
+            }
         }
     }
 
@@ -40,6 +57,7 @@ interface ThemeAnimationFormat {
             image: ImageBitmap,
             progress: Float,
             pressPosition: Offset?,
+            useDynamicContent: Boolean,
         ) {
             val originalRadius = max(size.width, size.height)
             val radius = originalRadius * progress
@@ -55,7 +73,11 @@ interface ThemeAnimationFormat {
             }
 
             clipPath(circlePath) {
-                drawImage(image)
+                if (useDynamicContent) {
+                    this@drawAnimationLayer.drawContent()
+                } else {
+                    drawImage(image)
+                }
             }
         }
     }
@@ -65,10 +87,15 @@ interface ThemeAnimationFormat {
             image: ImageBitmap,
             progress: Float,
             pressPosition: Offset?,
+            useDynamicContent: Boolean,
         ) {
             val clipWidth = size.width * progress
             clipRect(right = clipWidth) {
-                drawImage(image)
+                if (useDynamicContent) {
+                    this@drawAnimationLayer.drawContent()
+                } else {
+                    drawImage(image)
+                }
             }
         }
     }
@@ -95,6 +122,7 @@ interface ThemeAnimationFormat {
             image: ImageBitmap,
             progress: Float,
             pressPosition: Offset?,
+            useDynamicContent: Boolean,
         ) {
             val center = pressPosition ?: size.center
 
@@ -118,7 +146,11 @@ interface ThemeAnimationFormat {
             }
 
             clipPath(circlePath) {
-                drawImage(image)
+                if (useDynamicContent) {
+                    this@drawAnimationLayer.drawContent()
+                } else {
+                    drawImage(image)
+                }
             }
         }
     }

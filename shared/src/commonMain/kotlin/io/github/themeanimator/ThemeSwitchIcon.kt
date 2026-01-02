@@ -1,5 +1,6 @@
 package io.github.themeanimator
 
+import androidx.compose.animation.core.AnimationSpec
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
@@ -111,7 +112,9 @@ sealed interface ThemeSwitchIcon {
         }
     }
 
+    @ConsistentCopyVisibility
     data class LottieFilePainter internal constructor(
+        val animationSpec: AnimationSpec<Float>,
         val startProgress: Float,
         val endProgress: Float,
         val onReadContent: suspend () -> String,
@@ -124,7 +127,12 @@ sealed interface ThemeSwitchIcon {
             modifier: Modifier,
             contentDescription: String?,
         ) {
-            val progress by animateLottieProgress(state, startProgress, endProgress)
+            val progress by animateLottieProgress(
+                state = state,
+                animationSpec = animationSpec,
+                startProgress = startProgress,
+                endProgress = endProgress
+            )
             val composition by rememberLottieComposition {
                 JsonString(onReadContent())
             }
@@ -143,23 +151,31 @@ sealed interface ThemeSwitchIcon {
 
 @Composable
 fun rememberLottieIcon(
+    animationSpec: AnimationSpec<Float>,
     startProgress: Float,
     endProgress: Float,
     onReadContent: suspend () -> String,
-) = remember(onReadContent, startProgress, endProgress) {
+) = remember(
+    onReadContent,
+    startProgress,
+    endProgress,
+    animationSpec
+) {
     ThemeSwitchIcon.LottieFilePainter(
         startProgress = startProgress,
         endProgress = endProgress,
-        onReadContent = onReadContent
+        onReadContent = onReadContent,
+        animationSpec = animationSpec,
     )
 }
 
 @Composable
 private fun animateLottieProgress(
     state: ThemeAnimationState,
+    animationSpec: AnimationSpec<Float>,
     startProgress: Float,
     endProgress: Float,
 ): State<Float> = animateFloatAsState(
     targetValue = if (state.isDark) startProgress else endProgress,
-    animationSpec = state.animationSpec
+    animationSpec = animationSpec
 )

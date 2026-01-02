@@ -28,8 +28,9 @@ import themeanimator.composeapp.generated.resources.Res
 @Composable
 @Preview
 fun App() {
+    val animationSpec = tween<Float>(700)
     val animationState = rememberThemeAnimationState(
-        animationSpec = tween(700),
+        animationSpec = animationSpec,
         format = ThemeAnimationFormat.CircularAroundPress
     )
     val theme = if (animationState.isDark) {
@@ -55,12 +56,13 @@ fun App() {
                         ThemeSwitchButton(
                             animationState = animationState,
                             buttonIcon = rememberLottieIcon(
-                                startProgress = 0.85f,
-                                endProgress = 0.7f
+                                startProgress = 0.9f,
+                                endProgress = 0.5f,
+                                animationSpec = animationSpec
                             ) {
                                 Res.readBytes("files/anim.json").decodeToString()
                             },
-                            iconModifier = Modifier.padding(end = 16.dp),
+                            iconModifier = Modifier.padding(end = 12.dp),
                             iconSize = 40.dp,
                             iconScale = 3f
                         )

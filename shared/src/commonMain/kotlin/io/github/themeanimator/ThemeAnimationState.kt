@@ -17,6 +17,20 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.launch
 
+/**
+ * A state holder that manages theme toggle animations.
+ *
+ * This class provides internal state management for theme animations, including the current
+ * theme state, button position tracking, and recording coordination for smooth theme transitions.
+ * It is not recommended to use the class constructor directly. Use the [rememberThemeAnimationState] method instead.
+ *
+ * @param initialIsDark The initial theme state. `true` for dark theme, `false` for light theme.
+ * @param coroutineScope The coroutine scope used for launching asynchronous operations,
+ * such as record request coordination.
+ * @param animationSpec The animation specification for theme transitions.
+ * @param format The format/style of the theme animation. See [ThemeAnimationFormat] for available styles.
+ * @param useDynamicContent Whether to capture and animate dynamic content during theme transitions.
+ */
 @Stable
 class ThemeAnimationState(
     initialIsDark: Boolean,

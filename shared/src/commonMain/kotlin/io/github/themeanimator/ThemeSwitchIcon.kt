@@ -14,7 +14,6 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import io.github.alexzhirkevich.compottie.LottieCompositionSpec.Companion.JsonString
 import io.github.alexzhirkevich.compottie.rememberLottieComposition
 import io.github.alexzhirkevich.compottie.rememberLottiePainter
-import themeanimator.shared.generated.resources.Res
 import kotlin.jvm.JvmInline
 
 @Immutable

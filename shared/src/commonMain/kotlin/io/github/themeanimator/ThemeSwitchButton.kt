@@ -7,8 +7,10 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.scale
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Rect
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.IntRect
 import androidx.compose.ui.unit.IntSize
@@ -29,6 +31,9 @@ fun ThemeSwitchButton(
     animationState: ThemeAnimationState,
     buttonIcon: ThemeSwitchIcon = DefaultButtonIcon,
     modifier: Modifier = Modifier,
+    iconModifier: Modifier = Modifier,
+    iconSize: Dp = 20.dp,
+    iconScale: Float = 1f,
 ) {
     Box(modifier) {
         val positionProvider = remember(animationState) {
@@ -40,7 +45,10 @@ fun ThemeSwitchButton(
         ) {
             ThemeSwitchButtonBase(
                 animationState = animationState,
-                buttonIcon = buttonIcon
+                buttonIcon = buttonIcon,
+                iconModifier = iconModifier,
+                iconSize = iconSize,
+                iconScale = iconScale
             )
         }
     }
@@ -50,19 +58,22 @@ fun ThemeSwitchButton(
 private fun ThemeSwitchButtonBase(
     animationState: ThemeAnimationState,
     buttonIcon: ThemeSwitchIcon,
+    iconModifier: Modifier,
+    iconSize: Dp,
+    iconScale: Float,
 ) {
     IconButton(
         interactionSource = animationState.interactionSource,
         onClick = {
             animationState.toggleTheme()
         },
-        // modifier = Modifier.themeAnimationButtonTarget(animationState)
+        modifier = iconModifier
     ) {
         buttonIcon.Icon(
-            isDark = animationState.isDark,
+            state = animationState,
             tint = MaterialTheme.colorScheme.primary,
             contentDescription = "Theme switch icon",
-            modifier = Modifier.size(20.dp)
+            modifier = Modifier.size(iconSize).scale(iconScale)
         )
     }
 }

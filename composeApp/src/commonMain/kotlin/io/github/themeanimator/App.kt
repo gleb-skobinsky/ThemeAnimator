@@ -20,8 +20,10 @@ import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.scale
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import themeanimator.composeapp.generated.resources.Res
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -51,7 +53,18 @@ fun App() {
                         verticalArrangement = Arrangement.Center,
                         horizontalAlignment = Alignment.End
                     ) {
-                        ThemeSwitchButton(animationState = animationState)
+                        ThemeSwitchButton(
+                            animationState = animationState,
+                            buttonIcon = rememberLottieIcon(
+                                startProgress = 0.85f,
+                                endProgress = 0.7f
+                            ) {
+                                Res.readBytes("files/anim.json").decodeToString()
+                            },
+                            iconModifier = Modifier.padding(end = 16.dp),
+                            iconSize = 40.dp,
+                            iconScale = 3f
+                        )
                     }
                 }
             ) { contentPadding ->

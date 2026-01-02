@@ -1,30 +1,41 @@
 package io.github.themeanimator
 
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
+import androidx.compose.runtime.State
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.material3.Icon
+import io.github.alexzhirkevich.compottie.LottieCompositionSpec.Companion.JsonString
+import io.github.alexzhirkevich.compottie.rememberLottieComposition
+import io.github.alexzhirkevich.compottie.rememberLottiePainter
+import themeanimator.shared.generated.resources.Res
+import kotlin.jvm.JvmInline
 
 @Immutable
 sealed interface ThemeSwitchIcon {
 
     @Composable
     fun Icon(
-        isDark: Boolean,
+        state: ThemeAnimationState,
         tint: Color,
         modifier: Modifier = Modifier,
         contentDescription: String? = null,
     )
 
-    data class Vector(
+    @JvmInline
+    value class Vector(
         val imageVector: ImageVector,
     ) : ThemeSwitchIcon {
 
         @Composable
         override fun Icon(
-            isDark: Boolean,
+            state: ThemeAnimationState,
             tint: Color,
             modifier: Modifier,
             contentDescription: String?,
@@ -45,13 +56,84 @@ sealed interface ThemeSwitchIcon {
 
         @Composable
         override fun Icon(
-            isDark: Boolean,
+            state: ThemeAnimationState,
             tint: Color,
             modifier: Modifier,
             contentDescription: String?,
         ) {
             Icon(
-                imageVector = if (isDark) darkVector else lightVector,
+                imageVector = if (state.isDark) darkVector else lightVector,
+                contentDescription = contentDescription,
+                tint = tint,
+                modifier = modifier
+            )
+        }
+    }
+
+    @JvmInline
+    value class RasterPainter(
+        val painter: Painter,
+    ) : ThemeSwitchIcon {
+
+        @Composable
+        override fun Icon(
+            state: ThemeAnimationState,
+            tint: Color,
+            modifier: Modifier,
+            contentDescription: String?,
+        ) {
+            Icon(
+                painter = painter,
+                contentDescription = contentDescription,
+                tint = tint,
+                modifier = modifier
+            )
+        }
+    }
+
+    data class DuoRasterPainter(
+        val darkPainter: Painter,
+        val lightPainter: Painter,
+    ) : ThemeSwitchIcon {
+
+        @Composable
+        override fun Icon(
+            state: ThemeAnimationState,
+            tint: Color,
+            modifier: Modifier,
+            contentDescription: String?,
+        ) {
+            Icon(
+                painter = if (state.isDark) darkPainter else lightPainter,
+                contentDescription = contentDescription,
+                tint = tint,
+                modifier = modifier
+            )
+        }
+    }
+
+    data class LottieFilePainter internal constructor(
+        val startProgress: Float,
+        val endProgress: Float,
+        val onReadContent: suspend () -> String,
+    ) : ThemeSwitchIcon {
+
+        @Composable
+        override fun Icon(
+            state: ThemeAnimationState,
+            tint: Color,
+            modifier: Modifier,
+            contentDescription: String?,
+        ) {
+            val progress by animateLottieProgress(state, startProgress, endProgress)
+            val composition by rememberLottieComposition {
+                JsonString(onReadContent())
+            }
+            Icon(
+                painter = rememberLottiePainter(
+                    composition = composition,
+                    progress = { progress },
+                ),
                 contentDescription = contentDescription,
                 tint = tint,
                 modifier = modifier
@@ -59,3 +141,26 @@ sealed interface ThemeSwitchIcon {
         }
     }
 }
+
+@Composable
+fun rememberLottieIcon(
+    startProgress: Float,
+    endProgress: Float,
+    onReadContent: suspend () -> String,
+) = remember(onReadContent, startProgress, endProgress) {
+    ThemeSwitchIcon.LottieFilePainter(
+        startProgress = startProgress,
+        endProgress = endProgress,
+        onReadContent = onReadContent
+    )
+}
+
+@Composable
+private fun animateLottieProgress(
+    state: ThemeAnimationState,
+    startProgress: Float,
+    endProgress: Float,
+): State<Float> = animateFloatAsState(
+    targetValue = if (state.isDark) startProgress else endProgress,
+    animationSpec = state.animationSpec
+)

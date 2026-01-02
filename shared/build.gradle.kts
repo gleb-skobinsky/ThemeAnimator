@@ -40,7 +40,11 @@ kotlin {
             implementation(compose.foundation)
             implementation(compose.material3)
             implementation(compose.ui)
+            implementation(compose.components.resources)
             implementation(libs.androidx.collection)
+            implementation(libs.compottie)
+            implementation(libs.compottie.lite)
+            implementation(libs.compottie.dot)
         }
         commonTest.dependencies {
             implementation(libs.kotlin.test)

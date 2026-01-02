@@ -12,6 +12,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.graphics.vector.ImageVector
+import io.github.alexzhirkevich.compottie.LottieCompositionSpec
 import io.github.alexzhirkevich.compottie.LottieCompositionSpec.Companion.JsonString
 import io.github.alexzhirkevich.compottie.rememberLottieComposition
 import io.github.alexzhirkevich.compottie.rememberLottiePainter
@@ -117,8 +118,20 @@ sealed interface ThemeSwitchIcon {
         val animationSpec: AnimationSpec<Float>,
         val startProgress: Float,
         val endProgress: Float,
-        val onReadContent: suspend () -> String,
+        val onReadContent: suspend () -> LottieCompositionSpec,
     ) : ThemeSwitchIcon {
+
+        internal constructor(
+            animationSpec: AnimationSpec<Float>,
+            startProgress: Float,
+            endProgress: Float,
+            onReadContentJson: suspend () -> String,
+        ) : this(
+            animationSpec = animationSpec,
+            startProgress = startProgress,
+            endProgress = endProgress,
+            onReadContent = { JsonString(onReadContentJson()) }
+        )
 
         @Composable
         override fun Icon(
@@ -133,9 +146,9 @@ sealed interface ThemeSwitchIcon {
                 startProgress = startProgress,
                 endProgress = endProgress
             )
-            val composition by rememberLottieComposition {
-                JsonString(onReadContent())
-            }
+            val composition by rememberLottieComposition(
+                spec = onReadContent
+            )
             Icon(
                 painter = rememberLottiePainter(
                     composition = composition,
@@ -154,7 +167,27 @@ fun rememberLottieIcon(
     animationSpec: AnimationSpec<Float>,
     startProgress: Float,
     endProgress: Float,
-    onReadContent: suspend () -> String,
+    onReadContentJson: suspend () -> String,
+) = remember(
+    onReadContentJson,
+    startProgress,
+    endProgress,
+    animationSpec
+) {
+    ThemeSwitchIcon.LottieFilePainter(
+        startProgress = startProgress,
+        endProgress = endProgress,
+        onReadContentJson = onReadContentJson,
+        animationSpec = animationSpec,
+    )
+}
+
+@Composable
+fun rememberLottieIcon(
+    animationSpec: AnimationSpec<Float>,
+    startProgress: Float,
+    endProgress: Float,
+    onReadContent: suspend () -> LottieCompositionSpec,
 ) = remember(
     onReadContent,
     startProgress,

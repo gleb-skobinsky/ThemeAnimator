@@ -63,6 +63,4 @@ An example of the latter animation:
 https://github.com/user-attachments/assets/8d737094-1e41-4769-9356-e3d74063e492
 
 
-Please note that if your animation interacts with the position of the pressed button in any way the standard `ThemeSwitchButton` should be used.
-
-If you want to implement your own theme switch, notify the state with the `ThemeAnimationState.updateButtonPosition` method.
+Please note that if your animation interacts with the position of the pressed button, the standard `ThemeSwitchButton` should be used. Otherwise, you want to implement your own theme switch, notify the state with the `ThemeAnimationState.updateButtonPosition` method.

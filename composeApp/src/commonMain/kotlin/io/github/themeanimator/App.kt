@@ -22,6 +22,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import io.github.themeanimator.button.ThemeSwitchButton
+import io.github.themeanimator.button.rememberLottieIconJson
 import themeanimator.composeapp.generated.resources.Res
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -55,7 +57,7 @@ fun App() {
                     ) {
                         ThemeSwitchButton(
                             animationState = animationState,
-                            buttonIcon = rememberLottieIcon(
+                            buttonIcon = rememberLottieIconJson(
                                 startProgress = 0.9f,
                                 endProgress = 0.5f,
                                 animationSpec = animationSpec
@@ -64,7 +66,7 @@ fun App() {
                             },
                             iconModifier = Modifier.padding(end = 12.dp),
                             iconSize = 40.dp,
-                            iconScale = 3f
+                            iconScale = 2f
                         )
                     }
                 }

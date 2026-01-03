@@ -1,4 +1,4 @@
-package io.github.themeanimator
+package io.github.themeanimator.defaulticons
 
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor

@@ -6,6 +6,9 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.graphics.vector.path
 import androidx.compose.ui.unit.dp
 
+/**
+ * A sun icon suitable for representing the light theme.
+ */
 val SunIcon: ImageVector
     get() {
         if (SunWarmIcon != null) {

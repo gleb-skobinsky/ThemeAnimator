@@ -9,6 +9,25 @@ import io.github.alexzhirkevich.compottie.LottieCompositionSpec
 import io.github.alexzhirkevich.compottie.LottieCompositionSpec.Companion.JsonString
 import io.github.themeanimator.ThemeAnimationState
 
+/**
+ * Remembers a [ThemeSwitchIcon.LottieFilePainter] that loads Lottie animation from a JSON string.
+ *
+ * This function creates a Lottie icon that animates between [startProgress] and [endProgress]
+ * based on the theme state. The Lottie composition is loaded from a JSON string provided by
+ * [onReadContentJson].
+ *
+ * This is a convenience function for [rememberLottieIcon] when the Lottie source is a JSON string.
+ * For other composition sources (files, URLs, etc.), use [rememberLottieIcon] directly.
+ *
+ * @param animationSpec The animation specification controlling the interpolation between
+ *                      progress values during theme transitions.
+ * @param startProgress The Lottie animation progress value (0.0f to 1.0f) to display when in dark theme.
+ * @param endProgress The Lottie animation progress value (0.0f to 1.0f) to display when in light theme.
+ * @param onReadContentJson A suspend function that provides the Lottie animation JSON string.
+ *                          This is called when the icon is first composed and may perform I/O operations
+ *                          to load the animation source.
+ * @return A remembered [ThemeSwitchIcon.LottieFilePainter] that can be used with [ThemeSwitchButton].
+ */
 @Composable
 fun rememberLottieIconJson(
     animationSpec: AnimationSpec<Float>,
@@ -29,6 +48,24 @@ fun rememberLottieIconJson(
     )
 }
 
+/**
+ * Remembers a [ThemeSwitchIcon.LottieFilePainter] that loads Lottie animation from a composition specification.
+ *
+ * This function creates a Lottie icon that animates between [startProgress] and [endProgress]
+ * based on the theme state. The Lottie composition is loaded from the specification provided
+ * by [onReadContent].
+ *
+ * This function supports all Lottie composition specification types.
+ *
+ * @param animationSpec The animation specification controlling the interpolation between
+ *                      progress values during theme transitions.
+ * @param startProgress The Lottie animation progress value (0.0f to 1.0f) to display when in dark theme.
+ * @param endProgress The Lottie animation progress value (0.0f to 1.0f) to display when in light theme.
+ * @param onReadContent A suspend function that provides the [LottieCompositionSpec] defining
+ *                      the animation source. This is called when the icon is first composed and may
+ *                      perform I/O operations to load the animation source.
+ * @return A remembered [ThemeSwitchIcon.LottieFilePainter] that can be used with [ThemeSwitchButton].
+ */
 @Composable
 fun rememberLottieIcon(
     animationSpec: AnimationSpec<Float>,

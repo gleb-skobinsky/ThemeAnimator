@@ -6,6 +6,9 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.graphics.vector.path
 import androidx.compose.ui.unit.dp
 
+/**
+ * A moon icon suitable for representing the dark theme.
+ */
 val MoonIcon: ImageVector
     get() {
         if (_MoonIcon != null) {

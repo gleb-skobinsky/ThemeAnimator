@@ -17,8 +17,33 @@ import androidx.compose.ui.graphics.drawscope.drawIntoCanvas
 import kotlin.math.hypot
 import kotlin.math.max
 
+/**
+ * Defines the visual format and behavior of theme transition animations.
+ *
+ * Implementations of this interface determine how the theme change is animated,
+ * including clipping shapes, masking, and visual effects. Each format provides
+ * a unique way to transition between light and dark themes.
+ *
+ * The implementations contained in this file are some commonly-used formats.
+ * Implement your own [ThemeAnimationFormat] to further customize animation behavior.
+ */
 @Immutable
 interface ThemeAnimationFormat {
+    /**
+     * Draws the animated layer during a theme transition.
+     *
+     * This method is called during the animation frame to render the new theme
+     * over the old one. The implementation determines the visual effect of the transition.
+     *
+     * @param image The image bitmap containing the new theme's visual representation.
+     * @param progress The animation progress value, ranging from 0.0f (start) to 1.0f (complete).
+     * @param pressPosition The screen position where the theme toggle was triggered. May be null
+     *                     if position tracking is not available.
+     * @param useDynamicContent If true, draw dynamic content from the new theme; otherwise draw
+     *                          from the static [image] bitmap. Dynamic content preserves
+     *                          animations and scrolling during the transition
+     *                          (note that it is only true for the target theme part).
+     */
     fun ContentDrawScope.drawAnimationLayer(
         image: ImageBitmap,
         progress: Float,
@@ -26,6 +51,9 @@ interface ThemeAnimationFormat {
         useDynamicContent: Boolean,
     )
 
+    /**
+     * A crossfade animation format that gradually fades between themes.
+     */
     object Crossfade : ThemeAnimationFormat {
         override fun ContentDrawScope.drawAnimationLayer(
             image: ImageBitmap,
@@ -52,6 +80,9 @@ interface ThemeAnimationFormat {
         }
     }
 
+    /**
+     * A circular reveal animation format that expands from the center of the screen.
+     */
     object Circular : ThemeAnimationFormat {
         override fun ContentDrawScope.drawAnimationLayer(
             image: ImageBitmap,
@@ -82,6 +113,9 @@ interface ThemeAnimationFormat {
         }
     }
 
+    /**
+     * A sliding animation format that reveals the new theme from left to right.
+     */
     object Sliding : ThemeAnimationFormat {
         override fun ContentDrawScope.drawAnimationLayer(
             image: ImageBitmap,
@@ -100,6 +134,14 @@ interface ThemeAnimationFormat {
         }
     }
 
+    /**
+     * A circular reveal animation format that expands from the button press position.
+     *
+     * This format reveals the new theme through a circular clipping mask that expands
+     * outward from the position where the theme toggle button was pressed. This creates
+     * a ripple-like effect emanating from the user's interaction point. If no press
+     * position is available, the animation falls back to expanding from the center.
+     */
     object CircularAroundPress : ThemeAnimationFormat {
 
         private val maxRadiusCache = LruCache<Pair<Offset, Size>, Float>(3)

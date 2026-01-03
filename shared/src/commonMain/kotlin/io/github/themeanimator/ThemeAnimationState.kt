@@ -48,7 +48,11 @@ class ThemeAnimationState(
         private set
 
     fun updateButtonPosition(position: Rect) {
-        buttonPosition = position.center
+        updateButtonPosition(position.center)
+    }
+
+    fun updateButtonPosition(position: Offset) {
+        buttonPosition = position
     }
 
     fun toggleTheme() {

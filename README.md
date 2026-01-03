@@ -18,11 +18,7 @@ In order to animate your screen responsible for dark/light theme switching, wrap
 val animationState = rememberThemeAnimationState(
     format = ThemeAnimationFormat.CircularAroundPress
 )
-val theme = if (animationState.isDark) {
-    darkColorScheme()
-} else {
-    lightColorScheme()
-}
+val theme = if (animationState.isDark) darkColorScheme() else lightColorScheme()
 ThemeAnimationScope(
     theme = theme,
     state = animationState
@@ -63,6 +59,8 @@ Theme animations can be customized with an implementation of `ThemeAnimationForm
 - Circular reveal around press
 
 An example of the latter animation:
+
+https://github.com/user-attachments/assets/8d737094-1e41-4769-9356-e3d74063e492
 
 
 Please note that if your animation interacts with the position of the pressed button in any way the standard `ThemeSwitchButton` should be used.

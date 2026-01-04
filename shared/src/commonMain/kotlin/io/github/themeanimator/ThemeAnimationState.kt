@@ -63,7 +63,7 @@ class ThemeAnimationState(
             requestRecord.value = RecordStatus.RecordRequested
             requestRecord.firstOrNull { it == RecordStatus.Recorded }
             isDark = !isDark
-            requestRecord.value = RecordStatus.AnimationRequested
+            requestRecord.value = RecordStatus.PrepareForAnimation
         }
     }
 }

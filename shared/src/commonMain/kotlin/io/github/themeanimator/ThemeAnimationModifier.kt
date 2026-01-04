@@ -30,24 +30,31 @@ internal data class ThemeAnimationElement(
     val isDark: Boolean,
 ) : ModifierNodeElement<ThemeAnimationNode>() {
     override fun create(): ThemeAnimationNode {
-        return ThemeAnimationNode(graphicsLayer, state)
+        return ThemeAnimationNode(graphicsLayer, state, isDark)
     }
 
     override fun update(node: ThemeAnimationNode) {
-        node.updateState(graphicsLayer, state)
+        node.updateState(graphicsLayer, state, isDark)
     }
 }
 
 internal class ThemeAnimationNode(
     private var graphicsLayer: GraphicsLayer,
     private var state: ThemeAnimationState,
+    private var isDark: Boolean,
 ) : Modifier.Node(), DrawModifierNode, LayoutAwareModifierNode {
 
     private var animationProgress = 0f
     private var prevImageBitmap: ImageBitmap? = null
     private var currentImageBitmap: ImageBitmap? = null
 
-    private var isAnimating = false
+    private var animationPhase = AnimationPhase.Idle
+
+    private enum class AnimationPhase {
+        Idle,
+        InterceptDraw,
+        Animate,
+    }
 
     override fun onAttach() {
         super.onAttach()
@@ -61,15 +68,20 @@ internal class ThemeAnimationNode(
             state.requestRecord.collectLatest { request ->
                 // Record the current screen before allowing theme change
                 when (request) {
-                    RecordStatus.Initial,
-                    RecordStatus.Recorded -> Unit
-
                     RecordStatus.RecordRequested -> {
                         recordInitialImage()
                         state.requestRecord.value = RecordStatus.Recorded
                     }
 
-                    RecordStatus.AnimationRequested -> runAnimation()
+                    RecordStatus.PrepareForAnimation -> {
+                        // Immediately intercept drawing to avoid flickering of the new theme before animation
+                        // The actual animation command is expected to come
+                        // from recomposition through node update
+                        animationPhase = AnimationPhase.InterceptDraw
+                    }
+
+                    RecordStatus.Initial,
+                    RecordStatus.Recorded -> Unit
                 }
             }
         }
@@ -78,15 +90,34 @@ internal class ThemeAnimationNode(
     fun updateState(
         newGraphicsLayer: GraphicsLayer,
         newState: ThemeAnimationState,
+        newIsDark: Boolean,
     ) {
         graphicsLayer = newGraphicsLayer
-        state = newState
-        observeRecordRequests()
+        when {
+            state != newState -> {
+                state = newState
+                observeRecordRequests()
+            }
+
+            isDark != newIsDark -> {
+                isDark = newIsDark
+                runAnimation()
+            }
+        }
     }
 
-    private suspend fun runAnimation() {
+    private var animationJob: Job? = null
+
+    private fun runAnimation() {
+        animationJob?.cancel()
+        animationJob = coroutineScope.launch {
+            runAnimationSuspend()
+        }
+    }
+
+    private suspend fun runAnimationSuspend() {
         animationProgress = 0f
-        isAnimating = true
+        animationPhase = AnimationPhase.Animate
         prevImageBitmap = currentImageBitmap
         currentImageBitmap = graphicsLayer.toImageBitmap()
         animate(
@@ -97,7 +128,7 @@ internal class ThemeAnimationNode(
             animationProgress = value
             invalidateDraw()
         }
-        isAnimating = false
+        animationPhase = AnimationPhase.Idle
         invalidateDraw()
     }
 
@@ -105,26 +136,33 @@ internal class ThemeAnimationNode(
         val old = prevImageBitmap
         val new = currentImageBitmap
         val progress = animationProgress
-        val isAnim = isAnimating
+        val phase = animationPhase
         val position = state.buttonPosition
 
-        if (old != null && new != null && isAnim) {
-            drawImage(old)
-            with(state.format) {
-                drawAnimationLayer(
-                    image = new,
-                    progress = progress,
-                    pressPosition = position,
-                    useDynamicContent = state.useDynamicContent
-                )
+        when (phase) {
+            AnimationPhase.InterceptDraw if old != null -> {
+                drawImage(old)
             }
-        } else {
-            // Record content to graphicsLayer for future snapshots
-            graphicsLayer.record {
-                this@draw.drawContent()
+            AnimationPhase.Animate if old != null && new != null -> {
+                drawImage(old)
+                with(state.format) {
+                    drawAnimationLayer(
+                        image = new,
+                        progress = progress,
+                        pressPosition = position,
+                        useDynamicContent = state.useDynamicContent
+                    )
+                }
             }
-            // Draw the recorded layer
-            drawLayer(graphicsLayer)
+
+            else -> {
+                // Record content to graphicsLayer for future snapshots
+                graphicsLayer.record {
+                    this@draw.drawContent()
+                }
+                // Draw the recorded layer
+                drawLayer(graphicsLayer)
+            }
         }
     }
 

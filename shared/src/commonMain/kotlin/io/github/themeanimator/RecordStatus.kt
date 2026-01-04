@@ -4,5 +4,5 @@ internal enum class RecordStatus {
     Initial,
     RecordRequested,
     Recorded,
-    AnimationRequested,
+    PrepareForAnimation,
 }

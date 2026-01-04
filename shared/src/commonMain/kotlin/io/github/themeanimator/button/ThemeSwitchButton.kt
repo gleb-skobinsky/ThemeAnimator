@@ -60,16 +60,15 @@ fun ThemeSwitchButton(
     iconSize: Dp = 20.dp,
     iconScale: Float = 1f,
 ) {
+    val positionProvider = remember { ThemeSwitchPositionProvider() }
     Box(modifier) {
-        val positionProvider = remember(animationState) {
-            ThemeSwitchPositionProvider(animationState)
-        }
         Popup(
             popupPositionProvider = positionProvider,
             properties = PopupProperties(focusable = false, dismissOnClickOutside = false)
         ) {
             ThemeSwitchButtonBase(
                 animationState = animationState,
+                positionProvider = positionProvider,
                 buttonIcon = buttonIcon,
                 iconModifier = iconModifier,
                 iconSize = iconSize,
@@ -82,6 +81,7 @@ fun ThemeSwitchButton(
 @Composable
 private fun ThemeSwitchButtonBase(
     animationState: ThemeAnimationState,
+    positionProvider: ThemeSwitchPositionProvider,
     buttonIcon: ThemeSwitchIcon,
     iconModifier: Modifier,
     iconSize: Dp,
@@ -92,6 +92,10 @@ private fun ThemeSwitchButtonBase(
             animationState.toggleTheme()
         },
         modifier = iconModifier
+            .themeAnimationTarget(
+                state = animationState,
+                positionProvider = positionProvider
+            )
     ) {
         buttonIcon.Icon(
             state = animationState,
@@ -101,3 +105,11 @@ private fun ThemeSwitchButtonBase(
         )
     }
 }
+
+/**
+ * Registers
+ */
+internal expect fun Modifier.themeAnimationTarget(
+    state: ThemeAnimationState,
+    positionProvider: ThemeSwitchPositionProvider,
+): Modifier

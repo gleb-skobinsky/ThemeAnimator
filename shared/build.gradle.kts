@@ -32,9 +32,8 @@ kotlin {
         browser()
     }
 
+    @Suppress("Unused")
     sourceSets {
-        androidMain.dependencies {
-        }
         commonMain.dependencies {
             implementation(libs.compose.runtime)
             implementation(libs.compose.foundation)
@@ -46,11 +45,32 @@ kotlin {
             implementation(libs.compottie.lite)
             implementation(libs.compottie.dot)
         }
+        val skikoMain by creating {
+            dependsOn(commonMain.get())
+        }
+        val jvmMain by getting {
+            dependsOn(skikoMain)
+            dependencies {
+                implementation(libs.kotlinx.coroutinesSwing)
+            }
+        }
+        val iosMain by creating {
+            dependsOn(skikoMain)
+        }
+        val iosArm64Main by getting {
+            dependsOn(iosMain)
+        }
+        val iosSimulatorArm64Main by getting {
+            dependsOn(iosMain)
+        }
+        val wasmJsMain by getting {
+            dependsOn(skikoMain)
+        }
+        val jsMain by getting {
+            dependsOn(skikoMain)
+        }
         commonTest.dependencies {
             implementation(libs.kotlin.test)
-        }
-        jvmMain.dependencies {
-            implementation(libs.kotlinx.coroutinesSwing)
         }
     }
 }

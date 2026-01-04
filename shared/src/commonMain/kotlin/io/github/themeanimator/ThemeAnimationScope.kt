@@ -14,15 +14,12 @@ import androidx.compose.ui.graphics.rememberGraphicsLayer
  *
  * @param state The [ThemeAnimationState] instance that controls the theme animation.
  *              This state manages the current theme, animation timing, and format.
- * @param theme The current theme value. Changes to this value trigger the theme animation.
- *              Typically, this would be a theme object or boolean indicating the theme state.
  * @param content The composable content to be displayed and animated during theme transitions.
  *                This content will be captured and rendered with theme animation effects.
  */
 @Composable
-fun <Theme> ThemeAnimationScope(
+fun ThemeAnimationScope(
     state: ThemeAnimationState,
-    theme: Theme,
     content: @Composable () -> Unit,
 ) {
     val graphicsLayer = rememberGraphicsLayer()
@@ -30,7 +27,7 @@ fun <Theme> ThemeAnimationScope(
     Box(
         modifier = Modifier.themeAnimation(
             state = state,
-            theme = theme,
+            isDark = state.isDark,
             graphicsLayer = graphicsLayer
         )
     ) {

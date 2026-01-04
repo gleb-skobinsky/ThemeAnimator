@@ -36,11 +36,11 @@ kotlin {
         androidMain.dependencies {
         }
         commonMain.dependencies {
-            implementation(compose.runtime)
-            implementation(compose.foundation)
-            implementation(compose.material3)
-            implementation(compose.ui)
-            implementation(compose.components.resources)
+            implementation(libs.compose.runtime)
+            implementation(libs.compose.foundation)
+            implementation(libs.compose.material3)
+            implementation(libs.compose.ui)
+            implementation(libs.components.resources)
             implementation(libs.androidx.collection)
             implementation(libs.compottie)
             implementation(libs.compottie.lite)

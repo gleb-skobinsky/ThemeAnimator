@@ -93,16 +93,13 @@ internal class ThemeAnimationNode(
         newIsDark: Boolean,
     ) {
         graphicsLayer = newGraphicsLayer
-        when {
-            state != newState -> {
-                state = newState
-                observeRecordRequests()
-            }
-
-            isDark != newIsDark -> {
-                isDark = newIsDark
-                runAnimation()
-            }
+        if (state != newState) {
+            state = newState
+            observeRecordRequests()
+        }
+        if (isDark != newIsDark) {
+            isDark = newIsDark
+            runAnimation()
         }
     }
 
@@ -143,6 +140,7 @@ internal class ThemeAnimationNode(
             AnimationPhase.InterceptDraw if old != null -> {
                 drawImage(old)
             }
+
             AnimationPhase.Animate if old != null && new != null -> {
                 drawImage(old)
                 with(state.format) {

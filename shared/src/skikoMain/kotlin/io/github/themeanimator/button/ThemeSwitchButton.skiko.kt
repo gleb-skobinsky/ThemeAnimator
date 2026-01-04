@@ -9,5 +9,5 @@ internal actual fun Modifier.themeAnimationTarget(
     state: ThemeAnimationState,
     positionProvider: ThemeSwitchPositionProvider,
 ): Modifier = this.onGloballyPositioned { coordinates ->
-    state.updateButtonPosition(coordinates.boundsInWindow().center)
+    state.updateButtonPosition(coordinates.boundsInWindow())
 }

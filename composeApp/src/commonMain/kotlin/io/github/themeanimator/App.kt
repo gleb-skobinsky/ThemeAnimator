@@ -33,7 +33,7 @@ fun App() {
     val animationSpec = tween<Float>(700)
     val animationState = rememberThemeAnimationState(
         animationSpec = animationSpec,
-        format = ThemeAnimationFormat.Sliding
+        format = ThemeAnimationFormat.CircularAroundPress
     )
     val theme = if (animationState.isDark) {
         darkColorScheme()

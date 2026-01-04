@@ -7,7 +7,7 @@ In order to install the library with Gradle, be sure to use the mavenCentral() r
 Then simply use in dependencies:
 
 ```kotlin
-implementation("io.github.gleb-skobinsky:themeanimator:0.0.4")
+implementation("io.github.gleb-skobinsky:themeanimator:0.0.5")
 ```
 
 ### Usage
@@ -20,7 +20,6 @@ val animationState = rememberThemeAnimationState(
 )
 val theme = if (animationState.isDark) darkColorScheme() else lightColorScheme()
 ThemeAnimationScope(
-    theme = theme,
     state = animationState
 ) {
     MaterialTheme(

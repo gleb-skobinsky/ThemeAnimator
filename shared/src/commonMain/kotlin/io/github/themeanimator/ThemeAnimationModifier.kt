@@ -63,7 +63,6 @@ internal class ThemeAnimationNode<T>(
             state.requestRecord.collectLatest { request ->
                 // Record the current screen before allowing theme change
                 if (request == RecordStatus.RecordRequested) {
-                    invalidateDraw()
                     recordInitialImage()
                     state.requestRecord.value = RecordStatus.Recorded
                 }
@@ -134,11 +133,9 @@ internal class ThemeAnimationNode<T>(
         }
     }
 
-    private fun recordInitialImage() {
-        coroutineScope.launch {
-            val image = graphicsLayer.toImageBitmap()
-            prevImageBitmap = image
-            currentImageBitmap = image
-        }
+    private suspend fun recordInitialImage() {
+        val image = graphicsLayer.toImageBitmap()
+        prevImageBitmap = image
+        currentImageBitmap = image
     }
 }

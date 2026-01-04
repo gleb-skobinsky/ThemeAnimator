@@ -63,3 +63,17 @@ https://github.com/user-attachments/assets/8d737094-1e41-4769-9356-e3d74063e492
 
 
 Please note that if your animation interacts with the position of the pressed button, the standard `ThemeSwitchButton` should be used. Otherwise, you want to implement your own theme switch, notify the state with the `ThemeAnimationState.updateButtonPosition` method.
+
+### Theme animation button
+
+The theme animation button is provided with the `ThemeSwitchButton` Composable. 5 types of button icons are provided. 
+For animations between the dark and light vector icons, you can utilize Lottie animations:
+```kotlin
+rememberLottieIcon(
+    startProgress = 1f,
+    endProgress = 0.5f,
+    animationSpec = animationSpec
+) {
+    JsonString(Res.readBytes("files/anim.json").decodeToString())
+}
+```

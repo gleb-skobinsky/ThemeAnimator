@@ -61,7 +61,9 @@ android {
 
     defaultConfig {
         minSdk = libs.versions.android.minSdk.get().toInt()
-        targetSdk = libs.versions.android.targetSdk.get().toInt()
+        val targetSdkVersion = libs.versions.android.targetSdk.get().toInt()
+        testOptions.targetSdk = targetSdkVersion
+        lint.targetSdk = targetSdkVersion
     }
     packaging {
         resources {
@@ -80,7 +82,7 @@ android {
 }
 
 dependencies {
-    debugImplementation(compose.uiTooling)
+    debugImplementation(libs.ui.tooling)
 }
 
 fun loadProperties(): Properties? {

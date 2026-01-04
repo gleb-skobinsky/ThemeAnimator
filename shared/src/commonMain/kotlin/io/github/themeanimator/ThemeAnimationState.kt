@@ -13,6 +13,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Rect
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.launch
@@ -55,8 +56,10 @@ class ThemeAnimationState(
         buttonPosition = position
     }
 
+    private var toggleThemeJob: Job? = null
     fun toggleTheme() {
-        coroutineScope.launch {
+        if (toggleThemeJob?.isActive == true) return
+        toggleThemeJob = coroutineScope.launch {
             requestRecord.value = RecordStatus.RecordRequested
             requestRecord.firstOrNull { it == RecordStatus.Recorded }
             isDark = !isDark

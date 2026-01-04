@@ -20,9 +20,9 @@ import androidx.compose.ui.graphics.rememberGraphicsLayer
  *                This content will be captured and rendered with theme animation effects.
  */
 @Composable
-fun <T> ThemeAnimationScope(
+fun <Theme> ThemeAnimationScope(
     state: ThemeAnimationState,
-    theme: T,
+    theme: Theme,
     content: @Composable () -> Unit,
 ) {
     val graphicsLayer = rememberGraphicsLayer()

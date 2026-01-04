@@ -14,9 +14,9 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
-internal fun <T> Modifier.themeAnimation(
+internal fun <Theme> Modifier.themeAnimation(
     state: ThemeAnimationState,
-    theme: T,
+    theme: Theme,
     graphicsLayer: GraphicsLayer,
 ) = this then ThemeAnimationElement(
     theme = theme,
@@ -24,22 +24,22 @@ internal fun <T> Modifier.themeAnimation(
     state = state
 )
 
-internal data class ThemeAnimationElement<T>(
-    val theme: T,
+internal data class ThemeAnimationElement<Theme>(
+    val theme: Theme,
     val graphicsLayer: GraphicsLayer,
     val state: ThemeAnimationState,
-) : ModifierNodeElement<ThemeAnimationNode<T>>() {
-    override fun create(): ThemeAnimationNode<T> {
+) : ModifierNodeElement<ThemeAnimationNode<Theme>>() {
+    override fun create(): ThemeAnimationNode<Theme> {
         return ThemeAnimationNode(theme, graphicsLayer, state)
     }
 
-    override fun update(node: ThemeAnimationNode<T>) {
+    override fun update(node: ThemeAnimationNode<Theme>) {
         node.updateState(theme, graphicsLayer, state)
     }
 }
 
-internal class ThemeAnimationNode<T>(
-    private var theme: T,
+internal class ThemeAnimationNode<Theme>(
+    private var theme: Theme,
     private var graphicsLayer: GraphicsLayer,
     private var state: ThemeAnimationState,
 ) : Modifier.Node(), DrawModifierNode, LayoutAwareModifierNode {
@@ -47,7 +47,7 @@ internal class ThemeAnimationNode<T>(
     private var animationProgress = 0f
     private var prevImageBitmap: ImageBitmap? = null
     private var currentImageBitmap: ImageBitmap? = null
-    private var prevTheme: T? = null
+    private var prevTheme: Theme? = null
 
     private var isAnimating = false
 
@@ -71,7 +71,7 @@ internal class ThemeAnimationNode<T>(
     }
 
     fun updateState(
-        newTheme: T,
+        newTheme: Theme,
         newGraphicsLayer: GraphicsLayer,
         newState: ThemeAnimationState,
     ) {

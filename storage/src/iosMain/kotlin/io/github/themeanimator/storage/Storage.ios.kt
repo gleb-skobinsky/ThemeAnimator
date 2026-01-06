@@ -10,17 +10,28 @@ import platform.Foundation.NSFileManager
 import platform.Foundation.NSUserDomainMask
 
 @Composable
-internal actual fun getThemeStorage(): Storage {
-    return remember { DataStoreStorage(createDataStore()) }
+internal actual fun getThemeStorage(
+    preferencesFileName: String,
+    preferencesKey: String,
+    jvmChildDirectory: String,
+): Storage {
+    return remember {
+        DataStoreStorage(
+            internalStore = createIosDataStore(preferencesFileName),
+            preferencesKey = preferencesKey
+        )
+    }
 }
 
 @OptIn(ExperimentalForeignApi::class)
-fun createDataStore(): DataStore<Preferences> = createDataStore(
-    NSFileManager.defaultManager.URLForDirectory(
+fun createIosDataStore(
+    preferencesFileName: String,
+): DataStore<Preferences> = createDataStore(
+    path = NSFileManager.defaultManager.URLForDirectory(
         directory = NSDocumentDirectory,
         inDomain = NSUserDomainMask,
         appropriateForURL = null,
         create = false,
         error = null,
-    )!!.path + "/${dataStoreFileName}"
+    )!!.path + "/$preferencesFileName"
 )

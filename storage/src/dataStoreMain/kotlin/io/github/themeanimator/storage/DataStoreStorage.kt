@@ -11,20 +11,18 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.runBlocking
 import okio.Path.Companion.toPath
-import io.github.themeanimator.storage.Storage.Companion.THEME_KEY
 
 fun createDataStore(path: String): DataStore<Preferences> =
     PreferenceDataStoreFactory.createWithPath(
         produceFile = { path.toPath() }
     )
 
-internal const val dataStoreFileName = "theme_animator.preferences_pb"
-
 internal class DataStoreStorage(
     private val internalStore: DataStore<Preferences>,
+    preferencesKey: String,
 ) : Storage {
 
-    private val themeKey = intPreferencesKey(THEME_KEY)
+    private val themeKey = intPreferencesKey(preferencesKey)
 
     override val rawTheme: Flow<Int> = internalStore.data.map {
         it[themeKey] ?: 0

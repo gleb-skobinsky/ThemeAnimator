@@ -7,15 +7,24 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 
-fun createDataStore(context: Context): DataStore<Preferences> =
-    createDataStore(
-        context.filesDir.resolve(dataStoreFileName).absolutePath
-    )
+fun createAndroidDataStore(
+    context: Context,
+    preferencesFileName: String,
+): DataStore<Preferences> = createDataStore(
+    context.filesDir.resolve(preferencesFileName).absolutePath
+)
 
 @Composable
-internal actual fun getThemeStorage(): Storage {
+internal actual fun getThemeStorage(
+    preferencesFileName: String,
+    preferencesKey: String,
+    jvmChildDirectory: String,
+): Storage {
     val context = LocalContext.current.applicationContext
     return remember {
-        DataStoreStorage(createDataStore(context))
+        DataStoreStorage(
+            internalStore = createAndroidDataStore(context, preferencesFileName),
+            preferencesKey = preferencesKey
+        )
     }
 }

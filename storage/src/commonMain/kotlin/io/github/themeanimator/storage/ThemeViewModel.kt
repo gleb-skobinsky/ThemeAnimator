@@ -32,8 +32,16 @@ internal class ThemeViewModel(
 
 @Composable
 @Suppress("UNCHECKED_CAST")
-fun themeViewModel(): ThemeProvider {
-    val storage = getThemeStorage()
+fun themeViewModel(
+    preferencesFileName: String = "theme_animator.preferences_pb",
+    preferencesKey: String = "STORE_KEY_THEME",
+    jvmChildDirectory: String = ".myapp",
+): ThemeProvider {
+    val storage = getThemeStorage(
+        preferencesFileName = preferencesFileName,
+        preferencesKey = preferencesKey,
+        jvmChildDirectory = jvmChildDirectory
+    )
     return viewModel<ThemeViewModel>(
         factory = object : ViewModelProvider.Factory {
             override fun <T : ViewModel> create(

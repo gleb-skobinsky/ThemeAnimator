@@ -8,26 +8,31 @@ import com.russhwolf.settings.set
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import io.github.themeanimator.storage.Storage.Companion.THEME_KEY
 
 @OptIn(ExperimentalSettingsApi::class)
-internal class JsStorage : Storage {
+internal class JsStorage(
+    private val preferencesKey: String,
+) : Storage {
     private val settings = StorageSettings()
 
     private val _rawTheme = MutableStateFlow(getRawTheme())
     override val rawTheme: Flow<Int> = _rawTheme.asStateFlow()
 
     override fun getRawTheme(): Int {
-        return settings.getIntOrNull(THEME_KEY) ?: 0
+        return settings.getIntOrNull(preferencesKey) ?: 0
     }
 
     override suspend fun setRawTheme(theme: Int) {
         _rawTheme.value = theme
-        settings[THEME_KEY] = theme
+        settings[preferencesKey] = theme
     }
 }
 
 @Composable
-internal actual fun getThemeStorage(): Storage {
-    return remember { JsStorage() }
+internal actual fun getThemeStorage(
+    preferencesFileName: String,
+    preferencesKey: String,
+    jvmChildDirectory: String,
+): Storage {
+    return remember { JsStorage(preferencesKey) }
 }

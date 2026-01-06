@@ -9,11 +9,11 @@ internal interface Storage {
     suspend fun setRawTheme(theme: Int)
 
     fun getRawTheme(): Int
-
-    companion object {
-        const val THEME_KEY = "STORE_KEY_THEME"
-    }
 }
 
 @Composable
-internal expect fun getThemeStorage(): Storage
+internal expect fun getThemeStorage(
+    preferencesFileName: String,
+    preferencesKey: String,
+    jvmChildDirectory: String,
+): Storage

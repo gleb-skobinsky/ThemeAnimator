@@ -47,7 +47,7 @@ ThemeAnimationScope(
 The `ThemeAnimationState` is the primary object to manage and trigger animations.
 It should be created with the `rememberThemeAnimationState` utility function. 
 
-Please note that your own theme object must be updated based on the `ThemeAnimationState.isDark` flag. This is a known limitation, but it is essential for the animation to work.
+Please note that your own theme object must be updated based on the `ThemeAnimationState.uiTheme` field. This is a known limitation, but it is essential for the animation to work.
 
 ### Theme animation formats
 

@@ -8,6 +8,7 @@ import androidx.compose.runtime.remember
 import io.github.alexzhirkevich.compottie.LottieCompositionSpec
 import io.github.alexzhirkevich.compottie.LottieCompositionSpec.Companion.JsonString
 import io.github.themeanimator.ThemeAnimationState
+import io.github.themeanimator.theme.isDark
 
 /**
  * Remembers a [ThemeSwitchIcon.LottieFilePainter] that loads Lottie animation from a JSON string.
@@ -93,6 +94,6 @@ internal fun animateLottieProgress(
     startProgress: Float,
     endProgress: Float,
 ): State<Float> = animateFloatAsState(
-    targetValue = if (state.isDark) startProgress else endProgress,
+    targetValue = if (state.uiTheme.isDark()) startProgress else endProgress,
     animationSpec = animationSpec
 )

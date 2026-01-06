@@ -13,6 +13,7 @@ import io.github.alexzhirkevich.compottie.LottieCompositionSpec
 import io.github.alexzhirkevich.compottie.rememberLottieComposition
 import io.github.alexzhirkevich.compottie.rememberLottiePainter
 import io.github.themeanimator.ThemeAnimationState
+import io.github.themeanimator.theme.isDark
 import kotlin.jvm.JvmInline
 
 /**
@@ -92,7 +93,7 @@ sealed interface ThemeSwitchIcon {
             contentDescription: String?,
         ) {
             Icon(
-                imageVector = if (state.isDark) darkVector else lightVector,
+                imageVector = if (state.uiTheme.isDark()) darkVector else lightVector,
                 contentDescription = contentDescription,
                 tint = tint,
                 modifier = modifier
@@ -148,7 +149,7 @@ sealed interface ThemeSwitchIcon {
             contentDescription: String?,
         ) {
             Icon(
-                painter = if (state.isDark) darkPainter else lightPainter,
+                painter = if (state.uiTheme.isDark()) darkPainter else lightPainter,
                 contentDescription = contentDescription,
                 tint = tint,
                 modifier = modifier

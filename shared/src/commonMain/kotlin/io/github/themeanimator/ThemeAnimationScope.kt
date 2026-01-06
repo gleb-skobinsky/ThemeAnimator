@@ -4,6 +4,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.rememberGraphicsLayer
+import io.github.themeanimator.theme.isDark
 
 /**
  * A composable scope that enables theme animations for its content.
@@ -27,7 +28,7 @@ fun ThemeAnimationScope(
     Box(
         modifier = Modifier.themeAnimation(
             state = state,
-            isDark = state.isDark,
+            isDark = state.uiTheme.isDark(),
             graphicsLayer = graphicsLayer
         )
     ) {

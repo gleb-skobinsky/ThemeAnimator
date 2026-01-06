@@ -1,5 +1,6 @@
 package io.github.themeanimator.button
 
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.IconButton
@@ -87,9 +88,10 @@ private fun ThemeSwitchButtonBase(
     iconSize: Dp,
     iconScale: Float,
 ) {
+    val isSystemInDarkTheme = isSystemInDarkTheme()
     IconButton(
         onClick = {
-            animationState.toggleTheme()
+            animationState.toggleTheme(isSystemInDarkTheme)
         },
         modifier = iconModifier
             .themeAnimationTarget(

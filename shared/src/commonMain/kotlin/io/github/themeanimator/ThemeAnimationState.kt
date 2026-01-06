@@ -12,9 +12,14 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Rect
+import io.github.themeanimator.theme.Theme
+import io.github.themeanimator.theme.ThemeProvider
+import io.github.themeanimator.theme.rememberRuntimeThemeProvider
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.drop
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.launch
 
@@ -25,7 +30,8 @@ import kotlinx.coroutines.launch
  * theme state, button position tracking, and recording coordination for smooth theme transitions.
  * It is not recommended to use the class constructor directly. Use the [rememberThemeAnimationState] method instead.
  *
- * @param initialIsDark The initial theme state. `true` for dark theme, `false` for light theme.
+ * @param themeProvider A [ThemeProvider] instance that provides the current theme and allows for theme updates. Typically,
+ * a data access object that saves the theme to a local or remote storage.
  * @param coroutineScope The coroutine scope used for launching asynchronous operations,
  * such as record request coordination.
  * @param animationSpec The animation specification for theme transitions.
@@ -34,15 +40,14 @@ import kotlinx.coroutines.launch
  */
 @Stable
 class ThemeAnimationState(
-    initialIsDark: Boolean,
+    private val themeProvider: ThemeProvider,
     private val coroutineScope: CoroutineScope,
     internal val animationSpec: AnimationSpec<Float>,
     internal val format: ThemeAnimationFormat,
     internal val useDynamicContent: Boolean,
 ) {
-    var isDark: Boolean by mutableStateOf(initialIsDark)
+    var uiTheme: Theme by mutableStateOf(themeProvider.currentTheme.value)
         private set
-
     internal val requestRecord = MutableStateFlow(RecordStatus.Initial)
 
     internal var buttonPosition: Offset? by mutableStateOf(null)
@@ -57,13 +62,26 @@ class ThemeAnimationState(
     }
 
     private var toggleThemeJob: Job? = null
-    fun toggleTheme() {
+    fun toggleTheme(isSystemInDarkTheme: Boolean) {
         if (toggleThemeJob?.isActive == true) return
         toggleThemeJob = coroutineScope.launch {
-            requestRecord.value = RecordStatus.RecordRequested
-            requestRecord.firstOrNull { it == RecordStatus.Recorded }
-            isDark = !isDark
-            requestRecord.value = RecordStatus.PrepareForAnimation
+            themeProvider.updateTheme(
+                themeProvider.currentTheme.value.opposite(isSystemInDarkTheme)
+            )
+        }
+    }
+
+    init {
+        coroutineScope.launch {
+            themeProvider.currentTheme
+                // Skip the initial theme
+                .drop(1)
+                .collectLatest { newTheme ->
+                    requestRecord.value = RecordStatus.RecordRequested
+                    requestRecord.firstOrNull { it == RecordStatus.Recorded }
+                    uiTheme = newTheme
+                    requestRecord.value = RecordStatus.PrepareForAnimation
+                }
         }
     }
 }
@@ -87,6 +105,7 @@ class ThemeAnimationState(
  */
 @Composable
 fun rememberThemeAnimationState(
+    themeProvider: ThemeProvider = rememberRuntimeThemeProvider(),
     animationSpec: AnimationSpec<Float> = tween(300),
     isDark: Boolean = isSystemInDarkTheme(),
     format: ThemeAnimationFormat = ThemeAnimationFormat.Sliding,
@@ -94,13 +113,14 @@ fun rememberThemeAnimationState(
 ): ThemeAnimationState {
     val coroutineScope = rememberCoroutineScope()
     return remember(
+        themeProvider,
         coroutineScope,
         animationSpec,
         useDynamicContent,
         format
     ) {
         ThemeAnimationState(
-            initialIsDark = isDark,
+            themeProvider = themeProvider,
             coroutineScope = coroutineScope,
             animationSpec = animationSpec,
             format = format,

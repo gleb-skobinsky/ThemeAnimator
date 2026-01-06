@@ -2,6 +2,7 @@ package io.github.themeanimator
 
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -24,6 +25,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import io.github.themeanimator.button.ThemeSwitchButton
 import io.github.themeanimator.button.rememberLottieIconJson
+import io.github.themeanimator.theme.Theme
+import io.github.themeanimator.theme.isDark
 import themeanimator.composeapp.generated.resources.Res
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -35,7 +38,7 @@ fun App() {
         animationSpec = animationSpec,
         format = ThemeAnimationFormat.CircularAroundPress
     )
-    val theme = if (animationState.isDark) {
+    val theme = if (animationState.uiTheme.isDark()) {
         darkColorScheme()
     } else {
         lightColorScheme()

@@ -1,4 +1,4 @@
-package org.violet.violetapp.secureStorage
+package io.github.themeanimator.storage
 
 import androidx.compose.runtime.Composable
 import androidx.lifecycle.ViewModel
@@ -6,8 +6,6 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.CreationExtras
 import androidx.lifecycle.viewmodel.compose.viewModel
-import io.github.themeanimator.storage.Storage
-import io.github.themeanimator.storage.getThemeStorage
 import io.github.themeanimator.theme.Theme
 import io.github.themeanimator.theme.ThemeProvider
 import kotlinx.coroutines.flow.SharingStarted

@@ -5,6 +5,8 @@ plugins {
     alias(libs.plugins.kotlinMultiplatform)
     alias(libs.plugins.androidLibrary)
     alias(libs.plugins.composeCompiler)
+    alias(libs.plugins.mavenPublish)
+    id("signing")
 }
 
 kotlin {
@@ -84,5 +86,45 @@ android {
     }
     defaultConfig {
         minSdk = libs.versions.android.minSdk.get().toInt()
+    }
+}
+
+mavenPublishing {
+    publishToMavenCentral()
+
+    signAllPublications()
+
+    coordinates(
+        groupId = "io.github.gleb-skobinsky",
+        artifactId = "themeanimator-storage",
+        version = libs.versions.themeanimator.version.get()
+    )
+
+    pom {
+        name = "ThemeAnimator"
+        description = "Compose multiplarform theme animation library storage extension"
+        inceptionYear = "2025"
+        url = "https://github.com/gleb-skobinsky/ThemeAnimator"
+
+        licenses {
+            license {
+                name = "The Apache License, Version 2.0"
+                url = "https://www.apache.org/licenses/LICENSE-2.0.txt"
+                distribution = "https://www.apache.org/licenses/LICENSE-2.0.txt"
+            }
+        }
+        developers {
+            developer {
+                id = "skobinsky"
+                name = "Gleb Gutnik"
+                url = "https://github.com/gleb-skobinsky"
+            }
+        }
+        scm {
+            url = "https://github.com/gleb-skobinsky/ThemeAnimator"
+            connection = "scm:git:git://github.com/gleb-skobinsky/ThemeAnimator.git"
+            developerConnection =
+                "scm:git:ssh://git@github.com/gleb-skobinsky/ThemeAnimator.git"
+        }
     }
 }

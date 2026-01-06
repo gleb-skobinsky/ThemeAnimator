@@ -120,7 +120,11 @@ mavenPublishing {
 
     signAllPublications()
 
-    coordinates("io.github.gleb-skobinsky", "themeanimator", "0.0.7")
+    coordinates(
+        groupId = "io.github.gleb-skobinsky",
+        artifactId = "themeanimator",
+        version = libs.versions.themeanimator.version.get()
+    )
 
     pom {
         name = "ThemeAnimator"

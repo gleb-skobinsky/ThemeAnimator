@@ -42,7 +42,6 @@ kotlin {
         val dataStoreMain by creating {
             dependsOn(commonMain.get())
             dependencies {
-                implementation(libs.datastore.settings)
                 implementation(libs.androidx.datastore)
             }
         }
@@ -64,7 +63,6 @@ kotlin {
         val browserMain by creating {
             dependsOn(commonMain.get())
             dependencies {
-                implementation(libs.multiplatform.settings)
                 implementation(libs.kotlinx.browser)
             }
         }

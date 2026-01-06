@@ -30,7 +30,7 @@ sealed interface ThemeSwitchIcon {
      * Renders the icon based on the current theme state.
      *
      * @param state The [ThemeAnimationState] containing the current theme information.
-     *              The [ThemeAnimationState.isDark] property determines which icon variant
+     *              The [ThemeAnimationState.uiTheme] property determines which icon variant
      *              to display for implementations with multiple icons.
      * @param tint The color tint to apply to the icon. Provide `Color.Unspecified` to apply no tint.
      * @param modifier The modifier to be applied to the icon component.

@@ -18,7 +18,7 @@ In order to animate your screen responsible for dark/light theme switching, wrap
 val animationState = rememberThemeAnimationState(
     format = ThemeAnimationFormat.CircularAroundPress
 )
-val theme = if (animationState.isDark) darkColorScheme() else lightColorScheme()
+val theme = if (animationState.uiTheme.isDark()) darkColorScheme() else lightColorScheme()
 ThemeAnimationScope(
     state = animationState
 ) {

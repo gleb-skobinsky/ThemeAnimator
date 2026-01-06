@@ -25,6 +25,7 @@ import androidx.compose.ui.unit.dp
 import io.github.themeanimator.button.ThemeSwitchButton
 import io.github.themeanimator.button.rememberLottieIconJson
 import io.github.themeanimator.theme.isDark
+import org.violet.violetapp.secureStorage.themeViewModel
 import themeanimator.composeapp.generated.resources.Res
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -33,6 +34,7 @@ import themeanimator.composeapp.generated.resources.Res
 fun App() {
     val animationSpec = tween<Float>(700)
     val animationState = rememberThemeAnimationState(
+        themeProvider = themeViewModel(),
         animationSpec = animationSpec,
         format = ThemeAnimationFormat.CircularAroundPress
     )

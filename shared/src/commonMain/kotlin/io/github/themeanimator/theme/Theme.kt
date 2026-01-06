@@ -6,7 +6,7 @@ import androidx.compose.runtime.Immutable
 sealed class Theme {
     abstract fun opposite(isSystemInDarkTheme: Boolean): Theme
 
-    internal abstract val ordinal: Int
+    abstract val ordinal: Int
 
     object Light : Theme() {
         override fun opposite(isSystemInDarkTheme: Boolean): Theme = Dark
@@ -29,7 +29,7 @@ sealed class Theme {
     }
 
     companion object {
-        internal fun fromOrdinal(ordinal: Int): Theme {
+        fun fromOrdinal(ordinal: Int): Theme {
             return when (ordinal) {
                 Light.ordinal -> Light
                 Dark.ordinal -> Dark

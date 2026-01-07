@@ -7,7 +7,6 @@ import androidx.compose.ui.graphics.drawscope.ContentDrawScope
 import androidx.compose.ui.graphics.layer.GraphicsLayer
 import androidx.compose.ui.graphics.layer.drawLayer
 import androidx.compose.ui.node.DrawModifierNode
-import androidx.compose.ui.node.LayoutAwareModifierNode
 import androidx.compose.ui.node.ModifierNodeElement
 import androidx.compose.ui.node.invalidateDraw
 import kotlinx.coroutines.Job
@@ -42,7 +41,7 @@ internal class ThemeAnimationNode(
     private var graphicsLayer: GraphicsLayer,
     private var state: ThemeAnimationState,
     private var isDark: Boolean,
-) : Modifier.Node(), DrawModifierNode, LayoutAwareModifierNode {
+) : Modifier.Node(), DrawModifierNode {
 
     private var animationProgress = 0f
     private var prevImageBitmap: ImageBitmap? = null

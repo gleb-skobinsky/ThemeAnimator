@@ -7,7 +7,7 @@ In order to install the library with Gradle, be sure to use the mavenCentral() r
 Then simply use in dependencies:
 
 ```kotlin
-implementation("io.github.gleb-skobinsky:themeanimator:0.0.10")
+implementation("io.github.gleb-skobinsky:themeanimator:0.0.11")
 ```
 
 ### Usage

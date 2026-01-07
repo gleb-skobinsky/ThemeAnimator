@@ -91,7 +91,6 @@ class ThemeAnimationState(
  *
  * @param animationSpec the animation specification for the theme transition.
  * Defaults to a 300ms tween animation.
- * @param isDark the initial theme state. `true` for dark theme, `false` for light theme.
  * @param format the format/style of the theme animation.
  * Defaults to [ThemeAnimationFormat.Sliding]. For more styles, see [ThemeAnimationFormat].
  * @param useDynamicContent if set to `true`, the target content (that is, the theme

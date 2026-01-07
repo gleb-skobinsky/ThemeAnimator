@@ -7,7 +7,7 @@ In order to install the library with Gradle, be sure to use the mavenCentral() r
 Then simply use in dependencies:
 
 ```kotlin
-implementation("io.github.gleb-skobinsky:themeanimator:0.0.7")
+implementation("io.github.gleb-skobinsky:themeanimator:0.0.10")
 ```
 
 ### Usage
@@ -15,30 +15,38 @@ implementation("io.github.gleb-skobinsky:themeanimator:0.0.7")
 In order to animate your screen responsible for dark/light theme switching, wrap it with the `ThemeAnimationScope` composable:
 
 ```kotlin
-val animationState = rememberThemeAnimationState(
-    format = ThemeAnimationFormat.CircularAroundPress
-)
-val theme = if (animationState.isDark) darkColorScheme() else lightColorScheme()
-ThemeAnimationScope(
-    state = animationState
-) {
-    MaterialTheme(
-        colorScheme = theme
+@Composable
+fun App() {
+    val animationState = rememberThemeAnimationState(
+        format = ThemeAnimationFormat.CircularAroundPress
+    )
+    val theme = if (animationState.uiTheme.isDark()) darkColorScheme() else lightColorScheme()
+    ThemeAnimationScope(
+        state = animationState
     ) {
-        Scaffold(
-            topBar = {
-                Column(
-                    modifier = Modifier.statusBarsPadding().fillMaxWidth(),
-                    verticalArrangement = Arrangement.Center,
-                    horizontalAlignment = Alignment.End
-                ) {
-                    ThemeSwitchButton(
-                        animationState = animationState
-                    )
+        MaterialTheme(
+            colorScheme = theme
+        ) {
+            Scaffold(
+                topBar = {
+                    Column(
+                        modifier = Modifier.statusBarsPadding().fillMaxWidth(),
+                        verticalArrangement = Arrangement.Center,
+                        horizontalAlignment = Alignment.End
+                    ) {
+                        ThemeSwitchButton(
+                            animationState = animationState
+                        )
+                    }
                 }
+            ) { contentPadding ->
+                Box(
+                    modifier = Modifier
+                        .background(MaterialTheme.colorScheme.primaryContainer)
+                        .fillMaxSize()
+                        .padding(contentPadding)
+                )
             }
-        ) { contentPadding ->
-            // Your screen here
         }
     }
 }
@@ -47,7 +55,7 @@ ThemeAnimationScope(
 The `ThemeAnimationState` is the primary object to manage and trigger animations.
 It should be created with the `rememberThemeAnimationState` utility function. 
 
-Please note that your own theme object must be updated based on the `ThemeAnimationState.isDark` flag. This is a known limitation, but it is essential for the animation to work.
+Please note that your own theme object must be updated based on the `ThemeAnimationState.uiTheme` field. This is a known limitation, but it is essential for the animation to work.
 
 ### Theme animation formats
 

@@ -2,7 +2,6 @@ package io.github.themeanimator
 
 import androidx.compose.animation.core.AnimationSpec
 import androidx.compose.animation.core.tween
-import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.getValue
@@ -107,7 +106,6 @@ class ThemeAnimationState(
 fun rememberThemeAnimationState(
     themeProvider: ThemeProvider = rememberRuntimeThemeProvider(),
     animationSpec: AnimationSpec<Float> = tween(300),
-    isDark: Boolean = isSystemInDarkTheme(),
     format: ThemeAnimationFormat = ThemeAnimationFormat.Sliding,
     useDynamicContent: Boolean = false,
 ): ThemeAnimationState {

@@ -15,30 +15,38 @@ implementation("io.github.gleb-skobinsky:themeanimator:0.0.10")
 In order to animate your screen responsible for dark/light theme switching, wrap it with the `ThemeAnimationScope` composable:
 
 ```kotlin
-val animationState = rememberThemeAnimationState(
-    format = ThemeAnimationFormat.CircularAroundPress
-)
-val theme = if (animationState.uiTheme.isDark()) darkColorScheme() else lightColorScheme()
-ThemeAnimationScope(
-    state = animationState
-) {
-    MaterialTheme(
-        colorScheme = theme
+@Composable
+fun App() {
+    val animationState = rememberThemeAnimationState(
+        format = ThemeAnimationFormat.CircularAroundPress
+    )
+    val theme = if (animationState.uiTheme.isDark()) darkColorScheme() else lightColorScheme()
+    ThemeAnimationScope(
+        state = animationState
     ) {
-        Scaffold(
-            topBar = {
-                Column(
-                    modifier = Modifier.statusBarsPadding().fillMaxWidth(),
-                    verticalArrangement = Arrangement.Center,
-                    horizontalAlignment = Alignment.End
-                ) {
-                    ThemeSwitchButton(
-                        animationState = animationState
-                    )
+        MaterialTheme(
+            colorScheme = theme
+        ) {
+            Scaffold(
+                topBar = {
+                    Column(
+                        modifier = Modifier.statusBarsPadding().fillMaxWidth(),
+                        verticalArrangement = Arrangement.Center,
+                        horizontalAlignment = Alignment.End
+                    ) {
+                        ThemeSwitchButton(
+                            animationState = animationState
+                        )
+                    }
                 }
+            ) { contentPadding ->
+                Box(
+                    modifier = Modifier
+                        .background(MaterialTheme.colorScheme.primaryContainer)
+                        .fillMaxSize()
+                        .padding(contentPadding)
+                )
             }
-        ) { contentPadding ->
-            // Your screen here
         }
     }
 }

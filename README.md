@@ -85,3 +85,18 @@ rememberLottieIcon(
     JsonString(Res.readBytes("files/anim.json").decodeToString())
 }
 ```
+### Persistent theme provider
+In most real-world production use-cases, a persistent local or remote storage is needed to manage the selected theme. Such storage can be provided by implementing and passing a custom `ThemeProvider`. 
+If you opt-in to use a ready-made solution, though, you can use the `themeViewModel` from an additional library:
+```
+// In your Gradle files
+implementation(io.github.gleb-skobinsky:themeanimator-storage:0.0.11)
+
+val animationState = rememberThemeAnimationState(
+    themeProvider = themeViewModel(),
+    animationSpec = animationSpec,
+    format = ThemeAnimationFormat.CircularAroundPress
+)
+```
+**What's under the hood?**
+The theme storage library internally uses Androidx Datastore for all platforms except WASM and JS (in the browser, `localStorage` is used instead). Thanks to this, the theme is persisted across app relaunches.

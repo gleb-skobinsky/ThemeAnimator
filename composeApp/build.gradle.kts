@@ -46,7 +46,8 @@ kotlin {
             implementation(libs.androidx.activity.compose)
         }
         commonMain.dependencies {
-            implementation(projects.storage)
+            implementation(libs.self)
+            implementation(libs.self.storage)
             implementation(libs.compose.runtime)
             implementation(libs.compose.foundation)
             implementation(libs.compose.material3)
@@ -54,8 +55,6 @@ kotlin {
             implementation(libs.components.resources)
             implementation(libs.androidx.lifecycle.viewmodelCompose)
             implementation(libs.androidx.lifecycle.runtimeCompose)
-            implementation(projects.shared)
-            implementation(projects.storage)
             implementation(libs.kmp.tooling.preview)
         }
         commonTest.dependencies {

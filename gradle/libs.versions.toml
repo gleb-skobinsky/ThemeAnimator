@@ -53,6 +53,8 @@ ui-tooling = { module = "org.jetbrains.compose.ui:ui-tooling", version.ref = "co
 androidx-datastore = { module = "androidx.datastore:datastore-preferences", version.ref = "datastore" }
 kotlinx-browser = { module = "org.jetbrains.kotlinx:kotlinx-browser", version.ref = "kotlinx-browser" }
 coroutines = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "kotlinx-coroutines" }
+self = { module = "io.github.gleb-skobinsky:themeanimator", version.ref = "themeanimator-version" }
+self-storage = { module = "io.github.gleb-skobinsky:themeanimator-storage", version.ref = "themeanimator-version" }
 
 [plugins]
 androidApplication = { id = "com.android.application", version.ref = "agp" }

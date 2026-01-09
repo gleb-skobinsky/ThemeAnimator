@@ -1,0 +1,10 @@
+$dokka.format:html-v1
+$dokka.linkExtension:html
+
+module:core
+io.github.themeanimator
+io.github.themeanimator.button
+io.github.themeanimator.defaulticons
+io.github.themeanimator.theme
+module:storage
+io.github.themeanimator.storage

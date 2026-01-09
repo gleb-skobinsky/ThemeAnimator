@@ -35,7 +35,10 @@ import kotlinx.coroutines.launch
  * such as record request coordination.
  * @param animationSpec The animation specification for theme transitions.
  * @param format The format/style of the theme animation. See [ThemeAnimationFormat] for available styles.
- * @param useDynamicContent Whether to capture and animate dynamic content during theme transitions.
+ * @param useDynamicContent Whether to capture and animate dynamic content during theme transitions. If set to `true`, the target content (that is, the theme
+ *  * to which the theme is toggled) will be drawn dynamically and any changes to it, including scrolling,
+ *  * animations etc. will be preserved. Note that the abandoned theme will still be drawn statically, which may lead to inconsistency
+ *  * between the target and abandoned parts of the animation. Defaults to `false`.
  */
 @Stable
 class ThemeAnimationState(
@@ -132,9 +135,10 @@ class ThemeAnimationState(
  * Defaults to a 300ms tween animation.
  * @param format the format/style of the theme animation.
  * Defaults to [ThemeAnimationFormat.Sliding]. For more styles, see [ThemeAnimationFormat].
- * @param useDynamicContent if set to `true`, the target content (that is, the theme
+ * @param useDynamicContent Whether to capture and animate dynamic content during theme transitions.
+ * If set to `true`, the target content (that is, the theme
  * to which the theme is toggled) will be drawn dynamically and any changes to it, including scrolling,
- * animations etc. will be preserved. Note that the abandoned theme will still be drawn statically, leading to inconsistency
+ * animations etc. will be preserved. Note that the abandoned theme will still be drawn statically, which may lead to inconsistency
  * between the target and abandoned parts of the animation. Defaults to `false`.
  *
  * @return A remembered [ThemeAnimationState] instance that can be used to control

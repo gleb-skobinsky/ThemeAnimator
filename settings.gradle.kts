@@ -34,6 +34,6 @@ plugins {
 
 include(
     ":composeApp",
-    ":shared",
+    ":core",
     ":storage"
 )

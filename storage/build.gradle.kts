@@ -39,7 +39,7 @@ kotlin {
     @Suppress("Unused")
     sourceSets {
         commonMain.dependencies {
-            implementation(projects.shared)
+            implementation(projects.core)
             implementation(libs.coroutines)
             implementation(libs.compose.runtime)
             implementation(libs.compose.foundation)

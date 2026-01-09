@@ -19,7 +19,7 @@ dokka {
 }
 
 dependencies {
-    dokka(projects.shared)
+    dokka(projects.core)
     dokka(projects.storage)
 }
 

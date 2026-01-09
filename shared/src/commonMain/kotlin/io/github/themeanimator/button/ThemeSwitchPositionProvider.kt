@@ -8,8 +8,22 @@ import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.window.PopupPositionProvider
 
+/**
+ * A [PopupPositionProvider] that tracks button position for theme switch animations.
+ *
+ * This provider calculates popup positioning while internally tracking the button's
+ * screen coordinates. The tracked position is used by animation formats that require
+ * the interaction point, such as [io.github.themeanimator.ThemeAnimationFormat.CircularAroundPress].
+ */
 @Stable
 internal class ThemeSwitchPositionProvider : PopupPositionProvider {
+
+    /**
+     * The current popup position relative to the window.
+     * 
+     * This position is updated each time [calculatePosition] is called and represents
+     * the top-left corner of the popup content.
+     */
     internal var popupPosition: Offset = Offset.Zero
 
     override fun calculatePosition(

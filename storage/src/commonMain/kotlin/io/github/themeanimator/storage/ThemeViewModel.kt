@@ -30,6 +30,25 @@ internal class ThemeViewModel(
     }
 }
 
+/**
+ * Creates and provides a [ThemeProvider] backed by persistent storage using Android's ViewModel.
+ *
+ * This composable function creates a ViewModel-based [ThemeProvider] that persists theme
+ * changes across app launches and survives configuration changes. It uses platform-specific
+ * storage mechanisms to ensure theme preferences are maintained between sessions.
+ *
+ * The returned provider integrates with Jetpack Compose's ViewModel system, providing
+ * automatic cleanup and lifecycle management while maintaining theme state consistency.
+ *
+ * @param preferencesFileName The name of the preferences file used for storage.
+ *                           Defaults to "theme_animator.preferences_pb".
+ * @param preferencesKey The key used to store the theme value within the preferences.
+ *                      Defaults to "STORE_KEY_THEME".
+ * @param jvmChildDirectory The subdirectory name for JVM platforms, created within the user's
+ *                         home directory. Defaults to ".myapp". This parameter is ignored on
+ *                         other platforms.
+ * @return A [ThemeProvider] instance that persists theme changes and survives configuration changes.
+ */
 @Composable
 @Suppress("UNCHECKED_CAST")
 fun themeViewModel(

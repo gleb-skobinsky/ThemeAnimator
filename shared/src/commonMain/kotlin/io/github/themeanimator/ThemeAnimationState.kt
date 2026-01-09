@@ -45,22 +45,61 @@ class ThemeAnimationState(
     internal val format: ThemeAnimationFormat,
     internal val useDynamicContent: Boolean,
 ) {
+
+    /**
+     * The current theme being displayed in the UI.
+     *
+     * This property reflects the theme currently shown to the user and may differ
+     * temporarily from [themeProvider.currentTheme] during animation sequences.
+     * It's automatically updated when theme changes are received from the provider.
+     */
     var uiTheme: Theme by mutableStateOf(themeProvider.currentTheme.value)
         private set
+
     internal val requestRecord = MutableStateFlow(RecordStatus.Initial)
 
     internal var buttonPosition: Offset? by mutableStateOf(null)
         private set
 
+    /**
+     * Updates the button position using a rectangular bounds.
+     *
+     * This method sets the button position to the center of the provided rectangle.
+     * The position is used by animation formats that require knowledge of the
+     * interaction point for effects like circular reveals.
+     *
+     * @param position The rectangular bounds of the theme toggle button.
+     */
     fun updateButtonPosition(position: Rect) {
         updateButtonPosition(position.center)
     }
 
+    /**
+     * Updates the button position using screen coordinates.
+     *
+     * This method directly sets the button position to the specified point.
+     * The position is used by animation formats that require knowledge of the
+     * interaction point for effects like circular reveals.
+     *
+     * @param position The screen coordinates of the theme toggle button.
+     */
     fun updateButtonPosition(position: Offset) {
         buttonPosition = position
     }
 
     private var toggleThemeJob: Job? = null
+
+    /**
+     * Toggles the current theme to its opposite value.
+     *
+     * This method initiates a theme change by determining the opposite of the current
+     * theme and updating the theme provider. The method prevents multiple simultaneous
+     * toggle operations and coordinates with the animation system for smooth transitions.
+     *
+     * @param isSystemInDarkTheme Whether the system is currently in dark theme mode.
+     *                           This parameter is used to determine the opposite theme
+     *                           when the current theme is [Theme.System].
+     */
     fun toggleTheme(isSystemInDarkTheme: Boolean) {
         if (toggleThemeJob?.isActive == true) return
         toggleThemeJob = coroutineScope.launch {

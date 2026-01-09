@@ -23,8 +23,18 @@ internal actual fun getThemeStorage(
     }
 }
 
+/**
+ * Creates an iOS-specific [DataStore] for preferences storage.
+ *
+ * This function initializes a DataStore that stores preferences in the app's documents
+ * directory on iOS. The preferences file will be created in the app's sandboxed documents
+ * directory, following iOS storage conventions.
+ *
+ * @param preferencesFileName The name of the preferences file to create.
+ * @return A configured [DataStore] instance for iOS.
+ */
 @OptIn(ExperimentalForeignApi::class)
-fun createIosDataStore(
+internal fun createIosDataStore(
     preferencesFileName: String,
 ): DataStore<Preferences> = createDataStore(
     path = NSFileManager.defaultManager.URLForDirectory(

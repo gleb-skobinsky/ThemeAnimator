@@ -6,7 +6,19 @@ import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import java.io.File
 
-fun createJvmDataStore(
+/**
+ * Creates a JVM-specific [DataStore] for preferences storage.
+ *
+ * This function initializes a DataStore that stores preferences in a subdirectory
+ * within the user's home directory on JVM platforms (desktop applications).
+ * The directory structure follows common conventions for application data storage
+ * on desktop systems.
+ *
+ * @param preferencesFileName The name of the preferences file to create.
+ * @param jvmChildDirectory The name of the subdirectory to create within the user's home directory.
+ * @return A configured [DataStore] instance for JVM platforms.
+ */
+internal fun createJvmDataStore(
     preferencesFileName: String,
     jvmChildDirectory: String,
 ): DataStore<Preferences> = createDataStore(

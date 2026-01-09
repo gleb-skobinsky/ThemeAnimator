@@ -50,7 +50,7 @@ class ThemeAnimationState(
      * The current theme being displayed in the UI.
      *
      * This property reflects the theme currently shown to the user and may differ
-     * temporarily from [themeProvider.currentTheme] during animation sequences.
+     * temporarily from [ThemeProvider.currentTheme] during animation sequences.
      * It's automatically updated when theme changes are received from the provider.
      */
     var uiTheme: Theme by mutableStateOf(themeProvider.currentTheme.value)

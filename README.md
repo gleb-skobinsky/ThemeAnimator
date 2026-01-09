@@ -92,6 +92,7 @@ If you opt-in to use a ready-made solution, though, you can use the `themeViewMo
 // In your Gradle files
 implementation("io.github.gleb-skobinsky:themeanimator-storage:0.0.12")
 
+// In your Composable
 val animationState = rememberThemeAnimationState(
     themeProvider = themeViewModel(),
     animationSpec = animationSpec,

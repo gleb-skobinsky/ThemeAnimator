@@ -103,3 +103,7 @@ val animationState = rememberThemeAnimationState(
 **What's under the hood?**
 
 The theme storage library internally uses Androidx Datastore for all platforms except WASM and JS (in the browser, `localStorage` is used instead). Thanks to this, the theme is persisted across app relaunches.
+
+### More documentation
+
+Full docs derived from KDocs are available at [Github Pages](https://gleb-skobinsky.github.io/ThemeAnimator/).

@@ -12,12 +12,10 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import org.w3c.dom.CustomEvent
 import org.w3c.dom.CustomEventInit
-import org.w3c.dom.events.Event
-import org.w3c.dom.events.EventListener
 import org.w3c.dom.get
 import org.w3c.dom.set
 import kotlin.js.ExperimentalWasmJsInterop
-import kotlin.js.JsAny
+import kotlin.js.unsafeCast
 import org.w3c.dom.Storage as WebStorage
 
 @OptIn(ExperimentalWasmJsInterop::class)
@@ -49,16 +47,11 @@ internal class JsStorage(
         set(key, value)
     }
 
-    private class EventDetail(
-        val key: String,
-        val value: String,
-    ) : JsAny
-
     private fun observeKey(key: String): Flow<String> {
         return callbackFlow {
-            val listener = object : EventListener {
-                override fun handleEvent(event: Event) {
-                    val detail = ((event as? CustomEvent)?.detail as? EventDetail) ?: return
+            val listener = createEventListener { event ->
+                val detail = (event as? CustomEvent)?.detail ?: return@createEventListener
+                detail.unsafeCast<EventDetail>().let { detail ->
                     if (detail.key == key) {
                         launch {
                             send(detail.value)

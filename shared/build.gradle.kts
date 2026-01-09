@@ -12,12 +12,19 @@ plugins {
     id("signing")
 }
 
+val libraryVersion: String = libs.versions.themeanimator.version.get()
+
+group = "io.github.gleb-skobinsky"
+version = libraryVersion
+
 kotlin {
     androidTarget {
         compilerOptions {
             jvmTarget.set(JvmTarget.JVM_11)
         }
     }
+
+    iosX64()
     iosArm64()
     iosSimulatorArm64()
 
@@ -61,6 +68,9 @@ kotlin {
             dependsOn(iosMain)
         }
         val iosSimulatorArm64Main by getting {
+            dependsOn(iosMain)
+        }
+        val iosX64Main by getting {
             dependsOn(iosMain)
         }
         val wasmJsMain by getting {
@@ -123,7 +133,7 @@ mavenPublishing {
     coordinates(
         groupId = "io.github.gleb-skobinsky",
         artifactId = "themeanimator",
-        version = libs.versions.themeanimator.version.get()
+        version = libraryVersion
     )
 
     pom {

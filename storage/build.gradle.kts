@@ -9,6 +9,11 @@ plugins {
     id("signing")
 }
 
+val libraryVersion: String = libs.versions.themeanimator.version.get()
+
+group = "io.github.gleb-skobinsky"
+version = libraryVersion
+
 kotlin {
     js {
         browser()
@@ -25,6 +30,7 @@ kotlin {
         }
     }
 
+    iosX64()
     iosArm64()
     iosSimulatorArm64()
 
@@ -52,6 +58,9 @@ kotlin {
             dependsOn(iosMain)
         }
         val iosSimulatorArm64Main by getting {
+            dependsOn(iosMain)
+        }
+        val iosX64Main by getting {
             dependsOn(iosMain)
         }
         val jvmMain by getting {

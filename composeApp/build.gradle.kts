@@ -91,12 +91,12 @@ android {
         versionName = "1.0"
     }
     signingConfigs {
-        val properties = loadProperties() ?: error("No properties found")
+        val properties = loadProperties()
         create("release") {
             storeFile = file("../signing/release.jks")
-            storePassword = properties["KEYSTORE_PASSWORD"].toString()
+            storePassword = properties?.get("KEYSTORE_PASSWORD").toString()
             keyAlias = "default"
-            keyPassword = properties["KEY_PASSWORD"].toString()
+            keyPassword = properties?.get("KEY_PASSWORD").toString()
         }
     }
     packaging {

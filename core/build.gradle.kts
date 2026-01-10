@@ -115,16 +115,6 @@ dependencies {
     debugImplementation(libs.ui.tooling)
 }
 
-fun loadProperties(): Properties? {
-    val keystorePropertiesFile = rootProject.file("local.properties")
-    if (!keystorePropertiesFile.exists()) {
-        return null
-    }
-    val keystoreProperties = Properties()
-    keystoreProperties.load(FileInputStream(keystorePropertiesFile))
-    return keystoreProperties
-}
-
 mavenPublishing {
     publishToMavenCentral()
 

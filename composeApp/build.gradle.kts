@@ -1,6 +1,8 @@
 import org.jetbrains.compose.desktop.application.dsl.TargetFormat
 import org.jetbrains.kotlin.gradle.ExperimentalWasmDsl
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+import org.jetbrains.kotlin.konan.properties.Properties
+import java.io.FileInputStream
 
 plugins {
     alias(libs.plugins.kotlinMultiplatform)
@@ -16,7 +18,7 @@ kotlin {
             jvmTarget.set(JvmTarget.JVM_11)
         }
     }
-    
+
     listOf(
         iosArm64(),
         iosSimulatorArm64()
@@ -26,20 +28,20 @@ kotlin {
             isStatic = true
         }
     }
-    
+
     jvm()
-    
+
     js {
         browser()
         binaries.executable()
     }
-    
+
     @OptIn(ExperimentalWasmDsl::class)
     wasmJs {
         browser()
         binaries.executable()
     }
-    
+
     sourceSets {
         androidMain.dependencies {
             implementation(libs.kmp.tooling.preview)
@@ -67,16 +69,35 @@ kotlin {
     }
 }
 
+fun loadProperties(): Properties? {
+    val keystorePropertiesFile = rootProject.file("local.properties")
+    if (!keystorePropertiesFile.exists()) {
+        return null
+    }
+    val keystoreProperties = Properties()
+    keystoreProperties.load(FileInputStream(keystorePropertiesFile))
+    return keystoreProperties
+}
+
 android {
-    namespace = "io.github.themeanimator"
+    namespace = "io.github.themeanimator.demo"
     compileSdk = libs.versions.android.compileSdk.get().toInt()
 
     defaultConfig {
-        applicationId = "io.github.themeanimator"
+        applicationId = "io.github.themeanimator.demo"
         minSdk = libs.versions.android.minSdk.get().toInt()
         targetSdk = libs.versions.android.targetSdk.get().toInt()
         versionCode = 1
         versionName = "1.0"
+    }
+    signingConfigs {
+        val properties = loadProperties() ?: error("No properties found")
+        create("release") {
+            storeFile = file("../signing/release.jks")
+            storePassword = properties["KEYSTORE_PASSWORD"].toString()
+            keyAlias = "default"
+            keyPassword = properties["KEY_PASSWORD"].toString()
+        }
     }
     packaging {
         resources {
@@ -85,7 +106,13 @@ android {
     }
     buildTypes {
         getByName("release") {
+            signingConfig = signingConfigs.getByName("release")
             isMinifyEnabled = true
+            isShrinkResources = true
+            proguardFiles(
+                getDefaultProguardFile("proguard-android-optimize.txt"),
+                "proguard-rules.pro"
+            )
         }
     }
     compileOptions {

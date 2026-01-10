@@ -134,7 +134,7 @@ class ThemeAnimationState(
  * @param animationSpec the animation specification for the theme transition.
  * Defaults to a 300ms tween animation.
  * @param format the format/style of the theme animation.
- * Defaults to [ThemeAnimationFormat.Sliding]. For more styles, see [ThemeAnimationFormat].
+ * Defaults to [ThemeAnimationFormat.Crossfade]. For more styles, see [ThemeAnimationFormat].
  * @param useDynamicContent Whether to capture and animate dynamic content during theme transitions.
  * If set to `true`, the target content (that is, the theme
  * to which the theme is toggled) will be drawn dynamically and any changes to it, including scrolling,
@@ -148,7 +148,7 @@ class ThemeAnimationState(
 fun rememberThemeAnimationState(
     themeProvider: ThemeProvider = rememberRuntimeThemeProvider(),
     animationSpec: AnimationSpec<Float> = tween(300),
-    format: ThemeAnimationFormat = ThemeAnimationFormat.Sliding,
+    format: ThemeAnimationFormat = ThemeAnimationFormat.Crossfade,
     useDynamicContent: Boolean = false,
 ): ThemeAnimationState {
     val coroutineScope = rememberCoroutineScope()

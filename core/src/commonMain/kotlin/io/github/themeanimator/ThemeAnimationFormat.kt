@@ -11,9 +11,11 @@ import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.Paint
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.drawscope.ContentDrawScope
+import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.graphics.drawscope.clipPath
 import androidx.compose.ui.graphics.drawscope.clipRect
 import androidx.compose.ui.graphics.drawscope.drawIntoCanvas
+import kotlin.jvm.JvmInline
 import kotlin.math.hypot
 import kotlin.math.max
 
@@ -116,21 +118,50 @@ interface ThemeAnimationFormat {
     /**
      * A sliding animation format that reveals the new theme from left to right.
      */
-    object Sliding : ThemeAnimationFormat {
+    @JvmInline
+    value class Sliding(
+        val mode: SlidingMode,
+    ) : ThemeAnimationFormat {
         override fun ContentDrawScope.drawAnimationLayer(
             image: ImageBitmap,
             progress: Float,
             pressPosition: Offset?,
             useDynamicContent: Boolean,
         ) {
-            val clipWidth = size.width * progress
-            clipRect(right = clipWidth) {
+            clipRectByMode(
+                mode = mode,
+                progress = progress
+            ) {
                 if (useDynamicContent) {
                     this@drawAnimationLayer.drawContent()
                 } else {
                     drawImage(image)
                 }
             }
+        }
+
+        private inline fun DrawScope.clipRectByMode(
+            mode: SlidingMode,
+            progress: Float,
+            block: DrawScope.() -> Unit,
+        ) {
+            var left = 0f
+            var right = size.width
+            var top = 0f
+            var bottom = size.height
+            when (mode) {
+                SlidingMode.TopToBottom -> bottom = size.height * progress
+                SlidingMode.BottomToTop -> top = size.height.let { it - it * progress }
+                SlidingMode.LeftToRight -> left = size.width.let { it - it * progress }
+                SlidingMode.RightToLeft -> right = size.width * progress
+            }
+            clipRect(
+                left = left,
+                top = top,
+                right = right,
+                bottom = bottom,
+                block = block
+            )
         }
     }
 

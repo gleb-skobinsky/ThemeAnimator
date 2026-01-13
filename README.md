@@ -63,7 +63,7 @@ Theme animations can be customized with an implementation of `ThemeAnimationForm
 
 | Animation name               | Preview |
 |-----------------------------|---------|
-| Crossfade                   | https://github.com/user-attachments/assets/b9319db2-b8cc-45fa-ab23-834dba33e6d0 |
+| Crossfade                   | <video src="https://github.com/user-attachments/assets/b9319db2-b8cc-45fa-ab23-834dba33e6d0" controls width="200"></video> |
 | Sliding                     | https://github.com/user-attachments/assets/63b67bbd-0253-4589-9133-f70851db1860 |
 | Circular reveal             | https://github.com/user-attachments/assets/e220a9ae-dcc5-43cd-b369-b38be2c535c4 |
 | Circular reveal around press| https://github.com/user-attachments/assets/8d737094-1e41-4769-9356-e3d74063e492 |

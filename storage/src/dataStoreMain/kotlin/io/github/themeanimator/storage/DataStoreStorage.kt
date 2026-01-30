@@ -5,6 +5,9 @@ import androidx.datastore.preferences.core.PreferenceDataStoreFactory
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.intPreferencesKey
+import co.touchlab.stately.collections.ConcurrentMutableMap
+import kotlinx.atomicfu.locks.SynchronizedObject
+import kotlinx.atomicfu.locks.synchronized
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.first
@@ -22,9 +25,24 @@ import okio.Path.Companion.toPath
  * @return A configured [DataStore] instance for preferences.
  */
 internal fun createDataStore(path: String): DataStore<Preferences> =
-    PreferenceDataStoreFactory.createWithPath(
-        produceFile = { path.toPath() }
-    )
+    DataStoreHolder.getOrCreate(path)
+
+
+private object DataStoreHolder {
+    private val dataStoreCache = ConcurrentMutableMap<String, DataStore<Preferences>>()
+
+    private val lock = SynchronizedObject()
+
+    fun getOrCreate(path: String): DataStore<Preferences> {
+        return synchronized(lock) {
+            dataStoreCache.getOrPut(path) {
+                PreferenceDataStoreFactory.createWithPath(
+                    produceFile = { path.toPath() }
+                )
+            }
+        }
+    }
+}
 
 /**
  * A [Storage] implementation that uses Jetpack DataStore for theme persistence.

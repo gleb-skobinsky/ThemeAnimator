@@ -43,6 +43,7 @@ kotlin {
             implementation(libs.coroutines)
             implementation(libs.compose.runtime)
             implementation(libs.compose.foundation)
+            implementation(libs.stately.collections)
             implementation(libs.androidx.lifecycle.viewmodelCompose)
         }
         val dataStoreMain by creating {

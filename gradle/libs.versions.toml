@@ -26,6 +26,7 @@ datastore = "1.1.7"
 kotlinx-browser = "0.5.0"
 dokka = "2.1.0"
 stately = "2.1.0"
+atomicfu = "0.31.0"
 
 [libraries]
 components-resources = { module = "org.jetbrains.compose.components:components-resources", version.ref = "componentsResources" }
@@ -58,6 +59,7 @@ coroutines = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version
 self = { module = "io.github.gleb-skobinsky:themeanimator", version.ref = "themeanimator-version" }
 self-storage = { module = "io.github.gleb-skobinsky:themeanimator-storage", version.ref = "themeanimator-version" }
 stately-collections = { module = "co.touchlab:stately-concurrent-collections", version.ref = "stately" }
+atomicfu = { module = "org.jetbrains.kotlinx:atomicfu", version.ref = "atomicfu" }
 
 [plugins]
 androidApplication = { id = "com.android.application", version.ref = "agp" }

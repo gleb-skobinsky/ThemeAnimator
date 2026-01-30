@@ -44,6 +44,7 @@ kotlin {
             implementation(libs.compose.runtime)
             implementation(libs.compose.foundation)
             implementation(libs.stately.collections)
+            implementation(libs.atomicfu)
             implementation(libs.androidx.lifecycle.viewmodelCompose)
         }
         val dataStoreMain by creating {

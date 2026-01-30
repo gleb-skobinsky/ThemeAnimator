@@ -6,6 +6,7 @@ import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.IntRect
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.LayoutDirection
+import androidx.compose.ui.unit.toOffset
 import androidx.compose.ui.window.PopupPositionProvider
 
 /**
@@ -32,12 +33,8 @@ internal class ThemeSwitchPositionProvider : PopupPositionProvider {
         layoutDirection: LayoutDirection,
         popupContentSize: IntSize,
     ): IntOffset {
-        val topLeftX = (anchorBounds.left - popupContentSize.width).toFloat()
-        val topLeftY = anchorBounds.top.toFloat()
-        popupPosition = Offset(topLeftX, topLeftY)
-        return IntOffset(
-            x = anchorBounds.left + anchorBounds.width / 2,
-            y = anchorBounds.top + anchorBounds.height * 2,
-        )
+        val offset = anchorBounds.topLeft
+        popupPosition = offset.toOffset()
+        return offset
     }
 }

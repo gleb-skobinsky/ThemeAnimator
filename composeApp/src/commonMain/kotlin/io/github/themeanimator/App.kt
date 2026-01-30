@@ -24,8 +24,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import io.github.themeanimator.button.ThemeSwitchButton
 import io.github.themeanimator.button.rememberLottieIconJson
-import io.github.themeanimator.theme.isDark
 import io.github.themeanimator.storage.themeViewModel
+import io.github.themeanimator.theme.isDark
 import themeanimator.composeapp.generated.resources.Res
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -66,7 +66,7 @@ fun App() {
                             ) {
                                 Res.readBytes("files/anim.json").decodeToString()
                             },
-                            iconModifier = Modifier.padding(end = 12.dp),
+                            modifier = Modifier.padding(end = 12.dp),
                             iconSize = 40.dp,
                             iconScale = 2f
                         )
@@ -87,6 +87,7 @@ fun App() {
                     ) {
                         Text("Click me!")
                     }
+
                     repeat(3) {
                         Text(
                             modifier = Modifier.padding(horizontal = 20.dp),

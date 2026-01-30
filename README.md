@@ -7,7 +7,7 @@ In order to install the library with Gradle, be sure to use the mavenCentral() r
 Then simply use in dependencies:
 
 ```kotlin
-implementation("io.github.gleb-skobinsky:themeanimator:0.0.14")
+implementation("io.github.gleb-skobinsky:themeanimator:0.0.15")
 ```
 
 ### Usage
@@ -89,7 +89,7 @@ In most real-world production use-cases, a persistent local or remote storage is
 If you opt-in to use a ready-made solution, though, you can use the `themeViewModel` from an additional library:
 ```
 // In your Gradle files
-implementation("io.github.gleb-skobinsky:themeanimator-storage:0.0.14")
+implementation("io.github.gleb-skobinsky:themeanimator-storage:0.0.15")
 
 // In your Composable
 val animationState = rememberThemeAnimationState(

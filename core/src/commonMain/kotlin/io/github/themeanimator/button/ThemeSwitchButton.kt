@@ -75,6 +75,7 @@ fun ThemeSwitchButton(
             properties = PopupProperties(
                 focusable = false,
                 dismissOnClickOutside = false,
+                clippingEnabled = false,
             )
         ) {
             ThemeSwitchButtonBase(

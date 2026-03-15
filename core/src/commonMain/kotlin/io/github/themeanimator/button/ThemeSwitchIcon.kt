@@ -15,6 +15,7 @@ import io.github.alexzhirkevich.compottie.LottieCompositionSpec
 import io.github.alexzhirkevich.compottie.rememberLottieComposition
 import io.github.alexzhirkevich.compottie.rememberLottiePainter
 import io.github.themeanimator.ThemeAnimationState
+import io.github.themeanimator.theme.Theme
 import io.github.themeanimator.theme.isDark
 import kotlin.jvm.JvmInline
 
@@ -26,8 +27,8 @@ import kotlin.jvm.JvmInline
  * raster images, and Lottie animations.
  */
 @Immutable
-sealed interface ThemeSwitchIcon<ButtonData : ThemeButtonData> {
-    val data: ButtonData
+sealed interface ThemeSwitchIcon {
+    val switchMode: ButtonSwitchMode
 
     /**
      * Renders the icon based on the current theme state.
@@ -53,10 +54,12 @@ sealed interface ThemeSwitchIcon<ButtonData : ThemeButtonData> {
      */
     @Immutable
     @JvmInline
-    value class Vector(
-        override val data: ThemeButtonData.SomeVector,
-    ) : ThemeSwitchIcon<ThemeButtonData.SomeVector> {
+    value class Vector internal constructor(
+        private val data: ThemeButtonData.SomeVector,
+    ) : ThemeSwitchIcon {
         constructor(vector: ImageVector) : this(ThemeButtonData.SomeVector(vector))
+
+        override val switchMode: ButtonSwitchMode get() = data.switchMode
 
         @Composable
         override fun Icon(
@@ -78,13 +81,16 @@ sealed interface ThemeSwitchIcon<ButtonData : ThemeButtonData> {
      * A pair of vector icons that switch based on the current theme.
      */
     @Immutable
-    data class DuoVector(
-        override val data: ThemeButtonData.DuoVector,
-    ) : ThemeSwitchIcon<ThemeButtonData.DuoVector> {
+    @JvmInline
+    value class DuoVector internal constructor(
+        private val data: ThemeButtonData.DuoVector,
+    ) : ThemeSwitchIcon {
         constructor(
             darkVector: ImageVector,
             lightVector: ImageVector,
         ) : this(ThemeButtonData.DuoVector(darkVector, lightVector))
+
+        override val switchMode: ButtonSwitchMode get() = data.switchMode
 
         @Composable
         override fun Icon(
@@ -111,10 +117,12 @@ sealed interface ThemeSwitchIcon<ButtonData : ThemeButtonData> {
      */
     @JvmInline
     @Immutable
-    value class RasterPainter(
-        override val data: ThemeButtonData.SomePainter,
-    ) : ThemeSwitchIcon<ThemeButtonData.SomePainter> {
+    value class RasterPainter internal constructor(
+        private val data: ThemeButtonData.SomePainter,
+    ) : ThemeSwitchIcon {
         constructor(painter: Painter) : this(ThemeButtonData.SomePainter(painter))
+
+        override val switchMode: ButtonSwitchMode get() = data.switchMode
 
         @Composable
         override fun Icon(
@@ -136,9 +144,10 @@ sealed interface ThemeSwitchIcon<ButtonData : ThemeButtonData> {
      * A pair of raster painters that switch based on the current theme.
      */
     @Immutable
-    data class DuoRasterPainter(
-        override val data: ThemeButtonData.DuoPainter,
-    ) : ThemeSwitchIcon<ThemeButtonData.DuoPainter> {
+    @JvmInline
+    value class DuoRasterPainter internal constructor(
+        private val data: ThemeButtonData.DuoPainter,
+    ) : ThemeSwitchIcon {
         /**
          * This implementation displays [darkPainter] when in dark theme and [lightPainter]
          * when in light theme. The icon automatically transitions when the theme changes.
@@ -152,6 +161,8 @@ sealed interface ThemeSwitchIcon<ButtonData : ThemeButtonData> {
                 iconDark = darkPainter
             )
         )
+
+        override val switchMode: ButtonSwitchMode get() = data.switchMode
 
         @Composable
         override fun Icon(
@@ -174,13 +185,107 @@ sealed interface ThemeSwitchIcon<ButtonData : ThemeButtonData> {
     }
 
     /**
+     * A tri state of raster painters that switch based on the current theme.
+     */
+    @Immutable
+    @JvmInline
+    value class TriStateRasterPainter internal constructor(
+        private val data: ThemeButtonData.TriStatePainter,
+    ) : ThemeSwitchIcon {
+        /**
+         * This implementation displays [darkPainter] when in dark theme, [lightPainter]
+         * when in light theme, and [systemPainter] when following system theme.
+         * The icon automatically transitions when the theme changes.
+         */
+        constructor(
+            darkPainter: Painter,
+            lightPainter: Painter,
+            systemPainter: Painter,
+        ) : this(
+            ThemeButtonData.TriStatePainter(
+                iconLight = lightPainter,
+                iconDark = darkPainter,
+                iconSystem = systemPainter
+            )
+        )
+
+        override val switchMode: ButtonSwitchMode get() = data.switchMode
+
+        @Composable
+        override fun Icon(
+            state: ThemeAnimationState,
+            tint: Color,
+            modifier: Modifier,
+            contentDescription: String?,
+        ) {
+            Icon(
+                painter = when (state.uiTheme) {
+                    Theme.Dark -> data.iconDark
+                    Theme.Light -> data.iconLight
+                    Theme.System -> data.iconSystem
+                },
+                contentDescription = contentDescription,
+                tint = tint,
+                modifier = modifier
+            )
+        }
+    }
+
+    /**
+     * A tri state of vector painters that switch based on the current theme.
+     */
+    @Immutable
+    @JvmInline
+    value class TriStateVector internal constructor(
+        private val data: ThemeButtonData.TriStateVector,
+    ) : ThemeSwitchIcon {
+        /**
+         * This implementation displays [darkPainter] when in dark theme, [lightPainter]
+         * when in light theme, and [systemPainter] when following system theme.
+         * The icon automatically transitions when the theme changes.
+         */
+        constructor(
+            darkPainter: ImageVector,
+            lightPainter: ImageVector,
+            systemPainter: ImageVector,
+        ) : this(
+            ThemeButtonData.TriStateVector(
+                iconLight = lightPainter,
+                iconDark = darkPainter,
+                iconSystem = systemPainter
+            )
+        )
+
+        override val switchMode: ButtonSwitchMode get() = data.switchMode
+
+        @Composable
+        override fun Icon(
+            state: ThemeAnimationState,
+            tint: Color,
+            modifier: Modifier,
+            contentDescription: String?,
+        ) {
+            Icon(
+                imageVector = when (state.uiTheme) {
+                    Theme.Dark -> data.iconDark
+                    Theme.Light -> data.iconLight
+                    Theme.System -> data.iconSystem
+                },
+                contentDescription = contentDescription,
+                tint = tint,
+                modifier = modifier
+            )
+        }
+    }
+
+    /**
      * A Lottie animation icon that animates based on the current theme state.
      */
     @ConsistentCopyVisibility
     data class LottieFilePainter internal constructor(
-        override val data: ThemeButtonData.Animatable,
+        private val data: ThemeButtonData.Animatable,
         val onReadContent: suspend () -> LottieCompositionSpec,
-    ) : ThemeSwitchIcon<ThemeButtonData.Animatable> {
+    ) : ThemeSwitchIcon {
 
         /**
          * This implementation displays a Lottie animation with its progress animated between
@@ -227,6 +332,8 @@ sealed interface ThemeSwitchIcon<ButtonData : ThemeButtonData> {
             ),
             onReadContent = onReadContent
         )
+
+        override val switchMode: ButtonSwitchMode = data.switchMode
 
         @Composable
         override fun Icon(

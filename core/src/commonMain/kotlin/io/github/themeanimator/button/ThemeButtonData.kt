@@ -6,7 +6,7 @@ import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.graphics.vector.ImageVector
 
 @Immutable
-sealed interface ThemeButtonData {
+internal sealed interface ThemeButtonData {
     val switchMode: ButtonSwitchMode
 
     sealed interface Constant<Value : Any> : ThemeButtonData {

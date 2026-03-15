@@ -52,17 +52,15 @@ val DefaultButtonIcon = ThemeSwitchIcon.DuoVector(
  * @param iconSize The target size of the internal icon. Defaults to 20.dp.
  * @param iconScale The scale factor to apply to the icon. Defaults to 1.0f (no scaling).
  *                  Use values greater than 1.0f to enlarge the icon or less than 1.0f to shrink it.
- * @param switchMode The mode in which the button will switch the UI theme. See the [ButtonSwitchMode] KDocs for more info.
  */
 @Composable
 fun ThemeSwitchButton(
     animationState: ThemeAnimationState,
-    buttonIcon: ThemeSwitchIcon<*> = DefaultButtonIcon,
+    buttonIcon: ThemeSwitchIcon = DefaultButtonIcon,
     modifier: Modifier = Modifier,
     iconSize: Dp = 20.dp,
     iconScale: Float = 1f,
     iconTint: Color = MaterialTheme.colorScheme.primary,
-    switchMode: ButtonSwitchMode = ButtonSwitchMode.Binary,
 ) {
     val iconButtonSize = LocalMinimumInteractiveComponentSize.current
     val positionProvider = remember { ThemeSwitchPositionProvider() }
@@ -87,7 +85,6 @@ fun ThemeSwitchButton(
                 iconSize = iconSize,
                 iconScale = iconScale,
                 iconTint = iconTint,
-                switchMode = switchMode,
             )
         }
     }
@@ -97,18 +94,17 @@ fun ThemeSwitchButton(
 private fun ThemeSwitchButtonBase(
     animationState: ThemeAnimationState,
     positionProvider: ThemeSwitchPositionProvider,
-    buttonIcon: ThemeSwitchIcon<*>,
+    buttonIcon: ThemeSwitchIcon,
     iconSize: Dp,
     iconScale: Float,
     iconTint: Color,
-    switchMode: ButtonSwitchMode,
 ) {
     val isSystemInDarkTheme = isSystemInDarkTheme()
     IconButton(
         onClick = {
             animationState.toggleTheme(
                 isSystemInDarkTheme = isSystemInDarkTheme,
-                switchMode = switchMode
+                switchMode = buttonIcon.switchMode
             )
         },
         modifier = Modifier.themeAnimationTarget(

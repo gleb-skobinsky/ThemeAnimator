@@ -57,7 +57,7 @@ val DefaultButtonIcon = ThemeSwitchIcon.DuoVector(
 @Composable
 fun ThemeSwitchButton(
     animationState: ThemeAnimationState,
-    buttonIcon: ThemeSwitchIcon = DefaultButtonIcon,
+    buttonIcon: ThemeSwitchIcon<*> = DefaultButtonIcon,
     modifier: Modifier = Modifier,
     iconSize: Dp = 20.dp,
     iconScale: Float = 1f,
@@ -97,7 +97,7 @@ fun ThemeSwitchButton(
 private fun ThemeSwitchButtonBase(
     animationState: ThemeAnimationState,
     positionProvider: ThemeSwitchPositionProvider,
-    buttonIcon: ThemeSwitchIcon,
+    buttonIcon: ThemeSwitchIcon<*>,
     iconSize: Dp,
     iconScale: Float,
     iconTint: Color,
@@ -120,7 +120,7 @@ private fun ThemeSwitchButtonBase(
             state = animationState,
             tint = iconTint,
             contentDescription = "Theme switch icon",
-            modifier = Modifier.size(iconSize).scale(iconScale)
+            modifier = Modifier.size(iconSize).scale(iconScale),
         )
     }
 }

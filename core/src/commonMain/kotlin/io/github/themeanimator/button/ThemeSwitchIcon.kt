@@ -1,3 +1,5 @@
+@file:Suppress("Unused")
+
 package io.github.themeanimator.button
 
 import androidx.compose.animation.core.AnimationSpec
@@ -24,7 +26,8 @@ import kotlin.jvm.JvmInline
  * raster images, and Lottie animations.
  */
 @Immutable
-sealed interface ThemeSwitchIcon {
+sealed interface ThemeSwitchIcon<ButtonData : ThemeButtonData> {
+    val data: ButtonData
 
     /**
      * Renders the icon based on the current theme state.
@@ -47,15 +50,13 @@ sealed interface ThemeSwitchIcon {
 
     /**
      * A single vector icon that remains constant regardless of theme state.
-     *
-     * This implementation displays the same [imageVector] in both light and dark themes.
-     * Use this when you want the icon to remain unchanged during theme transitions.
      */
     @Immutable
     @JvmInline
     value class Vector(
-        val imageVector: ImageVector,
-    ) : ThemeSwitchIcon {
+        override val data: ThemeButtonData.SomeVector,
+    ) : ThemeSwitchIcon<ThemeButtonData.SomeVector> {
+        constructor(vector: ImageVector) : this(ThemeButtonData.SomeVector(vector))
 
         @Composable
         override fun Icon(
@@ -65,7 +66,7 @@ sealed interface ThemeSwitchIcon {
             contentDescription: String?,
         ) {
             Icon(
-                imageVector = imageVector,
+                imageVector = data.icon,
                 contentDescription = contentDescription,
                 tint = tint,
                 modifier = modifier
@@ -75,15 +76,15 @@ sealed interface ThemeSwitchIcon {
 
     /**
      * A pair of vector icons that switch based on the current theme.
-     *
-     * This implementation displays [darkVector] when in dark theme and [lightVector]
-     * when in light theme. The icon automatically transitions when the theme changes.
      */
     @Immutable
     data class DuoVector(
-        val darkVector: ImageVector,
-        val lightVector: ImageVector,
-    ) : ThemeSwitchIcon {
+        override val data: ThemeButtonData.DuoVector,
+    ) : ThemeSwitchIcon<ThemeButtonData.DuoVector> {
+        constructor(
+            darkVector: ImageVector,
+            lightVector: ImageVector,
+        ) : this(ThemeButtonData.DuoVector(darkVector, lightVector))
 
         @Composable
         override fun Icon(
@@ -93,7 +94,11 @@ sealed interface ThemeSwitchIcon {
             contentDescription: String?,
         ) {
             Icon(
-                imageVector = if (state.uiTheme.isDark()) darkVector else lightVector,
+                imageVector = if (state.uiTheme.isDark()) {
+                    data.iconDark
+                } else {
+                    data.iconLight
+                },
                 contentDescription = contentDescription,
                 tint = tint,
                 modifier = modifier
@@ -103,15 +108,13 @@ sealed interface ThemeSwitchIcon {
 
     /**
      * A single raster painter that remains constant regardless of theme state.
-     *
-     * This implementation displays the same [painter] in both light and dark themes.
-     * Use this when you want the raster icon to remain unchanged during theme transitions.
      */
     @JvmInline
     @Immutable
     value class RasterPainter(
-        val painter: Painter,
-    ) : ThemeSwitchIcon {
+        override val data: ThemeButtonData.SomePainter,
+    ) : ThemeSwitchIcon<ThemeButtonData.SomePainter> {
+        constructor(painter: Painter) : this(ThemeButtonData.SomePainter(painter))
 
         @Composable
         override fun Icon(
@@ -121,7 +124,7 @@ sealed interface ThemeSwitchIcon {
             contentDescription: String?,
         ) {
             Icon(
-                painter = painter,
+                painter = data.icon,
                 contentDescription = contentDescription,
                 tint = tint,
                 modifier = modifier
@@ -131,15 +134,24 @@ sealed interface ThemeSwitchIcon {
 
     /**
      * A pair of raster painters that switch based on the current theme.
-     *
-     * This implementation displays [darkPainter] when in dark theme and [lightPainter]
-     * when in light theme. The icon automatically transitions when the theme changes.
      */
     @Immutable
     data class DuoRasterPainter(
-        val darkPainter: Painter,
-        val lightPainter: Painter,
-    ) : ThemeSwitchIcon {
+        override val data: ThemeButtonData.DuoPainter,
+    ) : ThemeSwitchIcon<ThemeButtonData.DuoPainter> {
+        /**
+         * This implementation displays [darkPainter] when in dark theme and [lightPainter]
+         * when in light theme. The icon automatically transitions when the theme changes.
+         */
+        constructor(
+            darkPainter: Painter,
+            lightPainter: Painter,
+        ) : this(
+            ThemeButtonData.DuoPainter(
+                iconLight = lightPainter,
+                iconDark = darkPainter
+            )
+        )
 
         @Composable
         override fun Icon(
@@ -149,7 +161,11 @@ sealed interface ThemeSwitchIcon {
             contentDescription: String?,
         ) {
             Icon(
-                painter = if (state.uiTheme.isDark()) darkPainter else lightPainter,
+                painter = if (state.uiTheme.isDark()) {
+                    data.iconDark
+                } else {
+                    data.iconLight
+                },
                 contentDescription = contentDescription,
                 tint = tint,
                 modifier = modifier
@@ -159,29 +175,58 @@ sealed interface ThemeSwitchIcon {
 
     /**
      * A Lottie animation icon that animates based on the current theme state.
-     *
-     * This implementation displays a Lottie animation with its progress animated between
-     * [startProgress] and [endProgress] based on the theme state. The animation smoothly
-     * transitions when the theme changes using the specified [animationSpec].
-     *
-     * The Lottie composition is loaded asynchronously using [onReadContent], which returns
-     * a [LottieCompositionSpec] that defines the animation source (Lottie JSON, DotLottie file, etc.).
-     *
-     * @param animationSpec The animation specification controlling the interpolation between
-     *                      progress values during theme transitions.
-     * @param startProgress The Lottie animation progress value (0.0f to 1.0f) to display when in dark theme.
-     * @param endProgress The Lottie animation progress value (0.0f to 1.0f) to display when in light theme.
-     * @param onReadContent A suspend function that provides the Lottie composition specification.
-     *                      This is called when the icon is first composed and may perform I/O operations
-     *                      to load the animation source.
      */
     @ConsistentCopyVisibility
     data class LottieFilePainter internal constructor(
-        val animationSpec: AnimationSpec<Float>,
-        val startProgress: Float,
-        val endProgress: Float,
+        override val data: ThemeButtonData.Animatable,
         val onReadContent: suspend () -> LottieCompositionSpec,
-    ) : ThemeSwitchIcon {
+    ) : ThemeSwitchIcon<ThemeButtonData.Animatable> {
+
+        /**
+         * This implementation displays a Lottie animation with its progress animated between
+         * [darkProgress] and [lightProgress] based on the theme state. The animation smoothly
+         * transitions when the theme changes using the specified [animationSpec].
+         *
+         * The Lottie composition is loaded asynchronously using [onReadContent], which returns
+         * a [LottieCompositionSpec] that defines the animation source (Lottie JSON, DotLottie file, etc.).
+         *
+         * @param animationSpec The animation specification controlling the interpolation between
+         *                      progress values during theme transitions.
+         * @param darkProgress The Lottie animation progress value (0.0f to 1.0f) to display when in dark theme.
+         * @param lightProgress The Lottie animation progress value (0.0f to 1.0f) to display when in light theme.
+         * @param onReadContent A suspend function that provides the Lottie composition specification.
+         *                      This is called when the icon is first composed and may perform I/O operations
+         *                      to load the animation source.
+         */
+        constructor(
+            animationSpec: AnimationSpec<Float>,
+            darkProgress: Float,
+            lightProgress: Float,
+            onReadContent: suspend () -> LottieCompositionSpec,
+        ) : this(
+            data = ThemeButtonData.DuoLottie(
+                animationSpec = animationSpec,
+                darkProgress = darkProgress,
+                lightProgress = lightProgress
+            ),
+            onReadContent = onReadContent
+        )
+
+        constructor(
+            animationSpec: AnimationSpec<Float>,
+            darkProgress: Float,
+            lightProgress: Float,
+            systemProgress: Float,
+            onReadContent: suspend () -> LottieCompositionSpec,
+        ) : this(
+            data = ThemeButtonData.TriStateLottie(
+                animationSpec = animationSpec,
+                darkProgress = darkProgress,
+                lightProgress = lightProgress,
+                systemProgress = systemProgress,
+            ),
+            onReadContent = onReadContent
+        )
 
         @Composable
         override fun Icon(
@@ -192,9 +237,7 @@ sealed interface ThemeSwitchIcon {
         ) {
             val progress by animateLottieProgress(
                 state = state,
-                animationSpec = animationSpec,
-                startProgress = startProgress,
-                endProgress = endProgress
+                buttonData = data
             )
             val composition by rememberLottieComposition(
                 spec = onReadContent

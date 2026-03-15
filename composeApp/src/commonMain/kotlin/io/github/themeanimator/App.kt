@@ -20,8 +20,11 @@ import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import io.github.themeanimator.button.ButtonSwitchMode
+import io.github.themeanimator.button.ThemeButtonData
 import io.github.themeanimator.button.ThemeSwitchButton
 import io.github.themeanimator.button.rememberLottieIconJson
 import io.github.themeanimator.storage.themeViewModel
@@ -60,15 +63,19 @@ fun App() {
                         ThemeSwitchButton(
                             animationState = animationState,
                             buttonIcon = rememberLottieIconJson(
-                                startProgress = 0.9f,
-                                endProgress = 0.5f,
-                                animationSpec = animationSpec
+                                buttonData = ThemeButtonData.TriStateLottie(
+                                    lightProgress = 0f,
+                                    darkProgress = 1f,
+                                    systemProgress = 0.2f,
+                                    animationSpec = animationSpec
+                                )
                             ) {
-                                Res.readBytes("files/anim.json").decodeToString()
+                                Res.readBytes("files/tristate.json").decodeToString()
                             },
+                            iconTint = Color.Unspecified,
                             modifier = Modifier.padding(end = 12.dp),
                             iconSize = 40.dp,
-                            iconScale = 2f
+                            switchMode = ButtonSwitchMode.TriState,
                         )
                     }
                 }

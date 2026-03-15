@@ -1,6 +1,5 @@
 package io.github.themeanimator.button
 
-import androidx.compose.animation.core.AnimationSpec
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.State
@@ -8,22 +7,17 @@ import androidx.compose.runtime.remember
 import io.github.alexzhirkevich.compottie.LottieCompositionSpec
 import io.github.alexzhirkevich.compottie.LottieCompositionSpec.Companion.JsonString
 import io.github.themeanimator.ThemeAnimationState
+import io.github.themeanimator.theme.Theme
 import io.github.themeanimator.theme.isDark
 
 /**
  * Remembers a [ThemeSwitchIcon.LottieFilePainter] that loads Lottie animation from a JSON string.
  *
- * This function creates a Lottie icon that animates between [startProgress] and [endProgress]
- * based on the theme state. The Lottie composition is loaded from a JSON string provided by
- * [onReadContentJson].
- *
  * This is a convenience function for [rememberLottieIcon] when the Lottie source is a JSON string.
  * For other composition sources (files, URLs, etc.), use [rememberLottieIcon] directly.
  *
- * @param animationSpec The animation specification controlling the interpolation between
+ * @param buttonData The Lottie animation specification controlling the interpolation between
  *                      progress values during theme transitions.
- * @param startProgress The Lottie animation progress value (0.0f to 1.0f) to display when in dark theme.
- * @param endProgress The Lottie animation progress value (0.0f to 1.0f) to display when in light theme.
  * @param onReadContentJson A suspend function that provides the Lottie animation JSON string.
  *                          This is called when the icon is first composed and may perform I/O operations
  *                          to load the animation source.
@@ -31,37 +25,25 @@ import io.github.themeanimator.theme.isDark
  */
 @Composable
 fun rememberLottieIconJson(
-    animationSpec: AnimationSpec<Float>,
-    startProgress: Float,
-    endProgress: Float,
+    buttonData: ThemeButtonData.Animatable,
     onReadContentJson: suspend () -> String,
 ) = remember(
     onReadContentJson,
-    startProgress,
-    endProgress,
-    animationSpec
+    buttonData
 ) {
     ThemeSwitchIcon.LottieFilePainter(
-        startProgress = startProgress,
-        endProgress = endProgress,
+        data = buttonData,
         onReadContent = { JsonString(onReadContentJson()) },
-        animationSpec = animationSpec,
     )
 }
 
 /**
  * Remembers a [ThemeSwitchIcon.LottieFilePainter] that loads Lottie animation from a composition specification.
  *
- * This function creates a Lottie icon that animates between [startProgress] and [endProgress]
- * based on the theme state. The Lottie composition is loaded from the specification provided
- * by [onReadContent].
- *
  * This function supports all Lottie composition specification types.
  *
- * @param animationSpec The animation specification controlling the interpolation between
+ * @param buttonData The Lottie animation specification controlling the interpolation between
  *                      progress values during theme transitions.
- * @param startProgress The Lottie animation progress value (0.0f to 1.0f) to display when in dark theme.
- * @param endProgress The Lottie animation progress value (0.0f to 1.0f) to display when in light theme.
  * @param onReadContent A suspend function that provides the [LottieCompositionSpec] defining
  *                      the animation source. This is called when the icon is first composed and may
  *                      perform I/O operations to load the animation source.
@@ -69,31 +51,44 @@ fun rememberLottieIconJson(
  */
 @Composable
 fun rememberLottieIcon(
-    animationSpec: AnimationSpec<Float>,
-    startProgress: Float,
-    endProgress: Float,
+    buttonData: ThemeButtonData.Animatable,
     onReadContent: suspend () -> LottieCompositionSpec,
 ) = remember(
     onReadContent,
-    startProgress,
-    endProgress,
-    animationSpec
+    buttonData
 ) {
     ThemeSwitchIcon.LottieFilePainter(
-        startProgress = startProgress,
-        endProgress = endProgress,
+        data = buttonData,
         onReadContent = onReadContent,
-        animationSpec = animationSpec,
     )
 }
 
 @Composable
 internal fun animateLottieProgress(
     state: ThemeAnimationState,
-    animationSpec: AnimationSpec<Float>,
-    startProgress: Float,
-    endProgress: Float,
-): State<Float> = animateFloatAsState(
-    targetValue = if (state.uiTheme.isDark()) startProgress else endProgress,
-    animationSpec = animationSpec
-)
+    buttonData: ThemeButtonData.Animatable,
+): State<Float> {
+    return when (buttonData) {
+        is ThemeButtonData.BinaryAnimatable -> {
+            animateFloatAsState(
+                targetValue = if (state.uiTheme.isDark()) {
+                    buttonData.lightProgress
+                } else {
+                    buttonData.darkProgress
+                },
+                animationSpec = buttonData.animationSpec
+            )
+        }
+
+        is ThemeButtonData.TriStateAnimatable -> {
+            animateFloatAsState(
+                targetValue = when (state.uiTheme) {
+                    Theme.Light -> buttonData.lightProgress
+                    Theme.Dark -> buttonData.darkProgress
+                    Theme.System -> buttonData.systemProgress
+                },
+                animationSpec = buttonData.animationSpec
+            )
+        }
+    }
+}

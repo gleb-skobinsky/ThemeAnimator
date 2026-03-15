@@ -61,15 +61,18 @@ internal class DataStoreStorage(
 
     private val themeKey = intPreferencesKey(preferencesKey)
 
-    override val rawTheme: Flow<Int> = internalStore.data.map {
-        it[themeKey] ?: 0
+    override val rawTheme: Flow<Int> = internalStore.data.map { prefs ->
+        prefs.getThemeNotNull()
     }.distinctUntilChanged()
 
-    override suspend fun setRawTheme(theme: Int) {
-        internalStore.edit {
-            it[themeKey] = theme
+    override suspend fun setRawTheme(onUpdate: (Int) -> Int) {
+        internalStore.edit { prefs ->
+            val new = onUpdate(prefs.getThemeNotNull())
+            prefs[themeKey] = new
         }
     }
+
+    private fun Preferences.getThemeNotNull(): Int = get(themeKey) ?: 0
 
     override fun getRawTheme(): Int {
         return runBlocking { internalStore.data.first()[themeKey] ?: 0 }

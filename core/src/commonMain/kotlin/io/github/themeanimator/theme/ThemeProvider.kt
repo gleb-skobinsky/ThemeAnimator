@@ -29,5 +29,8 @@ interface ThemeProvider {
      *
      * @param theme The new theme to apply.
      */
-    suspend fun updateTheme(theme: Theme)
+    @Deprecated("Use the updateTheme with lambda updater. This overload will be removed in future versions.")
+    suspend fun updateTheme(theme: Theme) = updateTheme { theme }
+
+    suspend fun updateTheme(onUpdate: (Theme) -> Theme)
 }

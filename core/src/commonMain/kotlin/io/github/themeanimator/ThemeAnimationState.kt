@@ -11,6 +11,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Rect
+import io.github.themeanimator.button.ButtonSwitchMode
 import io.github.themeanimator.theme.Theme
 import io.github.themeanimator.theme.ThemeProvider
 import io.github.themeanimator.theme.rememberRuntimeThemeProvider
@@ -102,13 +103,20 @@ class ThemeAnimationState(
      * @param isSystemInDarkTheme Whether the system is currently in dark theme mode.
      *                           This parameter is used to determine the opposite theme
      *                           when the current theme is [Theme.System].
+     * @param switchMode The mode in which the [ThemeAnimationState] will switch the UI theme. See the [ButtonSwitchMode] KDocs for more info.
      */
-    fun toggleTheme(isSystemInDarkTheme: Boolean) {
+    fun toggleTheme(
+        isSystemInDarkTheme: Boolean,
+        switchMode: ButtonSwitchMode = ButtonSwitchMode.Binary,
+    ) {
         if (toggleThemeJob?.isActive == true) return
         toggleThemeJob = coroutineScope.launch {
-            themeProvider.updateTheme(
-                themeProvider.currentTheme.value.opposite(isSystemInDarkTheme)
-            )
+            themeProvider.updateTheme { oldTheme ->
+                when (switchMode) {
+                    ButtonSwitchMode.Binary -> oldTheme.opposite(isSystemInDarkTheme)
+                    ButtonSwitchMode.TriState -> oldTheme.next()
+                }
+            }
         }
     }
 

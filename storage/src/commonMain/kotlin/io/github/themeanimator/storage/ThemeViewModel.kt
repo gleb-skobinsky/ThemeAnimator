@@ -25,8 +25,10 @@ internal class ThemeViewModel(
         initialValue = Theme.fromOrdinal(storage.getRawTheme())
     )
 
-    override suspend fun updateTheme(theme: Theme) {
-        storage.setRawTheme(theme.ordinal)
+    override suspend fun updateTheme(onUpdate: (Theme) -> Theme) {
+        storage.setRawTheme { ordinal ->
+            onUpdate(Theme.fromOrdinal(ordinal)).ordinal
+        }
     }
 }
 

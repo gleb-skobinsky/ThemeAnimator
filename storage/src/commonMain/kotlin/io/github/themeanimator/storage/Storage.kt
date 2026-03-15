@@ -24,9 +24,9 @@ internal interface Storage {
     /**
      * Persists the raw theme value to storage.
      *
-     * @param theme The theme ordinal value to store.
+     * @param onUpdate The theme ordinal updater based on the previous value.
      */
-    suspend fun setRawTheme(theme: Int)
+    suspend fun setRawTheme(onUpdate: (Int) -> Int)
 
     /**
      * Retrieves the current raw theme value from storage synchronously.

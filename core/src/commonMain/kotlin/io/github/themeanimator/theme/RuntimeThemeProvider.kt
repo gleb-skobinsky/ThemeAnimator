@@ -5,6 +5,7 @@ import androidx.compose.runtime.saveable.Saver
 import androidx.compose.runtime.saveable.rememberSaveable
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
 
 /**
  * A runtime-only implementation of [ThemeProvider] that stores theme state in memory.
@@ -23,8 +24,8 @@ class RuntimeThemeProvider(
 
     override val currentTheme = _currentTheme.asStateFlow()
 
-    override suspend fun updateTheme(theme: Theme) {
-        _currentTheme.value = theme
+    override suspend fun updateTheme(onUpdate: (Theme) -> Theme) {
+        _currentTheme.update(onUpdate)
     }
 
     companion object {

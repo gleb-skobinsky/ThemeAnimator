@@ -22,6 +22,8 @@ sealed class Theme {
      */
     abstract fun opposite(isSystemInDarkTheme: Boolean): Theme
 
+    abstract fun next(): Theme
+
     /**
      * The unique ordinal identifier for this theme mode.
      *
@@ -37,6 +39,7 @@ sealed class Theme {
      */
     object Light : Theme() {
         override fun opposite(isSystemInDarkTheme: Boolean): Theme = Dark
+        override fun next(): Theme = System
         override val ordinal: Int = 0
     }
 
@@ -45,6 +48,7 @@ sealed class Theme {
      */
     object Dark : Theme() {
         override fun opposite(isSystemInDarkTheme: Boolean): Theme = Light
+        override fun next(): Theme = Light
         override val ordinal: Int = 1
     }
 
@@ -63,6 +67,8 @@ sealed class Theme {
                 Dark
             }
         }
+
+        override fun next(): Theme = Dark
 
         override val ordinal: Int = 2
     }

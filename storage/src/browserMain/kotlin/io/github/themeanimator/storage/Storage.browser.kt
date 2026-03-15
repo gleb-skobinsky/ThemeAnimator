@@ -10,6 +10,8 @@ import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 import org.w3c.dom.CustomEvent
 import org.w3c.dom.CustomEventInit
 import org.w3c.dom.get
@@ -31,6 +33,7 @@ import org.w3c.dom.Storage as WebStorage
 internal class JsStorage(
     private val preferencesKey: String,
 ) : Storage {
+    private val mutex = Mutex()
 
     override val rawTheme: Flow<Int> = observeKey(preferencesKey).map {
         it.toIntOrNull() ?: 0
@@ -40,8 +43,11 @@ internal class JsStorage(
         return localStorage[preferencesKey]?.toIntOrNull() ?: 0
     }
 
-    override suspend fun setRawTheme(theme: Int) {
-        localStorage.setValue(preferencesKey, theme.toString())
+    override suspend fun setRawTheme(onUpdate: (Int) -> Int) {
+        mutex.withLock {
+            val new = onUpdate(getRawTheme())
+            localStorage.setValue(preferencesKey, new.toString())
+        }
     }
 
     /**

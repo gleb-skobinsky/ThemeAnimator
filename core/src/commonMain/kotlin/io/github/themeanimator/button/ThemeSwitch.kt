@@ -1,0 +1,82 @@
+package io.github.themeanimator.button
+
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.isSystemInDarkTheme
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.scale
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Shape
+import androidx.compose.ui.unit.DpSize
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.window.Popup
+import androidx.compose.ui.window.PopupProperties
+import io.github.themeanimator.ThemeAnimationState
+
+/**
+ * A composable abstract switch that toggles themes in a binary or tristate transition.
+ *
+ * @param animationState The [ThemeAnimationState] that controls the theme switch animation.
+ *                       This state tracks the current theme and manages the animation lifecycle.
+ * @param buttonIcon The icon to display on the switch. Defaults to [DefaultButtonIcon] which
+ *                   shows a sun icon for dark theme and moon icon for light theme. Custom icons
+ *                   can be provided using [ThemeSwitchIcon] implementations.
+ * @param modifier The modifier to be applied to the switch container. Note that due to the
+ *                 popup rendering, some layout modifiers may not behave as expected.
+ * @param iconSize The target size of the internal icon. Defaults to 20.dp.
+ * @param iconScale The scale factor to apply to the icon. Defaults to 1.0f (no scaling).
+ *                  Use values greater than 1.0f to enlarge the icon or less than 1.0f to shrink it.
+ * @param iconShape The shape to which the switch will be clipped.
+ * @param iconTint The tint that will be applied to the icon on the switch.
+ */
+@Composable
+fun ThemeSwitch(
+    animationState: ThemeAnimationState,
+    buttonIcon: ThemeSwitchIcon = DefaultButtonIcon,
+    modifier: Modifier = Modifier,
+    iconSize: DpSize = DpSize(20.dp, 20.dp),
+    iconScale: Float = 1f,
+    iconShape: Shape = RoundedCornerShape(50),
+    iconTint: Color = MaterialTheme.colorScheme.primary,
+) {
+    val positionProvider = remember { ThemeSwitchPositionProvider() }
+    Box(modifier) {
+        Popup(
+            popupPositionProvider = positionProvider,
+            properties = PopupProperties(
+                focusable = false,
+                dismissOnClickOutside = false,
+                clippingEnabled = false,
+            )
+        ) {
+            val isSystemInDarkTheme = isSystemInDarkTheme()
+
+            buttonIcon.Icon(
+                state = animationState,
+                tint = iconTint,
+                contentDescription = "Theme switch icon",
+                modifier = Modifier
+                    .clip(iconShape)
+                    .size(iconSize)
+                    .themeAnimationTarget(
+                        state = animationState,
+                        positionProvider = positionProvider
+                    )
+                    .clickable {
+                        animationState.toggleTheme(
+                            isSystemInDarkTheme = isSystemInDarkTheme,
+                            switchMode = buttonIcon.switchMode
+                        )
+                    }
+                    .scale(iconScale),
+            )
+        }
+    }
+}

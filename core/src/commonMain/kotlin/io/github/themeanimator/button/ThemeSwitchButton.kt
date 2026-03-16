@@ -52,6 +52,7 @@ val DefaultButtonIcon = ThemeSwitchIcon.DuoVector(
  * @param iconSize The target size of the internal icon. Defaults to 20.dp.
  * @param iconScale The scale factor to apply to the icon. Defaults to 1.0f (no scaling).
  *                  Use values greater than 1.0f to enlarge the icon or less than 1.0f to shrink it.
+ * @param iconTint The tint that will be applied to the icon on the button.
  */
 @Composable
 fun ThemeSwitchButton(

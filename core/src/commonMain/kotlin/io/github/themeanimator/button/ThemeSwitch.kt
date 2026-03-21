@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.movableContentOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -15,8 +16,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.window.Popup
-import androidx.compose.ui.window.PopupProperties
 import io.github.themeanimator.ThemeAnimationState
 
 /**
@@ -46,15 +45,17 @@ fun ThemeSwitch(
     iconTint: Color = MaterialTheme.colorScheme.primary,
 ) {
     val positionProvider = remember { ThemeSwitchPositionProvider() }
-    Box(modifier) {
-        Popup(
-            popupPositionProvider = positionProvider,
-            properties = PopupProperties(
-                focusable = false,
-                dismissOnClickOutside = false,
-                clippingEnabled = false,
-            )
-        ) {
+    val isAnimating = animationState.isAnimating
+
+    val iconContent = remember(
+        animationState,
+        iconTint,
+        iconSize,
+        iconScale,
+        buttonIcon,
+        positionProvider
+    ) {
+        movableContentOf {
             val isSystemInDarkTheme = isSystemInDarkTheme()
 
             buttonIcon.Icon(
@@ -66,7 +67,7 @@ fun ThemeSwitch(
                     .size(iconSize)
                     .themeAnimationTarget(
                         state = animationState,
-                        positionProvider = positionProvider
+                        positionProvider = positionProvider,
                     )
                     .clickable {
                         animationState.toggleTheme(
@@ -77,5 +78,12 @@ fun ThemeSwitch(
                     .scale(iconScale),
             )
         }
+    }
+    Box(modifier) {
+        OptionalPopup(
+            positionProvider = positionProvider,
+            enabled = isAnimating,
+            content = iconContent
+        )
     }
 }

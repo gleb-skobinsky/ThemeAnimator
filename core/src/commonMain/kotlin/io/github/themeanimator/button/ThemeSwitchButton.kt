@@ -8,6 +8,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.LocalMinimumInteractiveComponentSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.movableContentOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.scale
@@ -15,6 +16,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Popup
+import androidx.compose.ui.window.PopupPositionProvider
 import androidx.compose.ui.window.PopupProperties
 import io.github.themeanimator.ThemeAnimationState
 import io.github.themeanimator.defaulticons.MoonIcon
@@ -63,61 +65,52 @@ fun ThemeSwitchButton(
     iconScale: Float = 1f,
     iconTint: Color = MaterialTheme.colorScheme.primary,
 ) {
-    val iconButtonSize = LocalMinimumInteractiveComponentSize.current
+    val iconSize = LocalMinimumInteractiveComponentSize.current
     val positionProvider = remember { ThemeSwitchPositionProvider() }
-    Box(
-        modifier.defaultMinSize(
-            minWidth = iconButtonSize,
-            minHeight = iconButtonSize
-        )
+    val isAnimating = animationState.isAnimating
+
+    val iconContent = remember(
+        animationState,
+        iconTint,
+        iconSize,
+        iconScale,
+        buttonIcon,
+        positionProvider
     ) {
-        Popup(
-            popupPositionProvider = positionProvider,
-            properties = PopupProperties(
-                focusable = false,
-                dismissOnClickOutside = false,
-                clippingEnabled = false,
-            )
-        ) {
-            ThemeSwitchButtonBase(
-                animationState = animationState,
-                positionProvider = positionProvider,
-                buttonIcon = buttonIcon,
-                iconSize = iconSize,
-                iconScale = iconScale,
-                iconTint = iconTint,
-            )
+        movableContentOf {
+            val isSystemInDarkTheme = isSystemInDarkTheme()
+            IconButton(
+                onClick = {
+                    animationState.toggleTheme(
+                        isSystemInDarkTheme = isSystemInDarkTheme,
+                        switchMode = buttonIcon.switchMode
+                    )
+                },
+                modifier = Modifier.themeAnimationTarget(
+                    state = animationState,
+                    positionProvider = positionProvider,
+                ),
+            ) {
+                buttonIcon.Icon(
+                    state = animationState,
+                    tint = iconTint,
+                    contentDescription = "Theme switch icon",
+                    modifier = Modifier.size(iconSize).scale(iconScale),
+                )
+            }
         }
     }
-}
 
-@Composable
-private fun ThemeSwitchButtonBase(
-    animationState: ThemeAnimationState,
-    positionProvider: ThemeSwitchPositionProvider,
-    buttonIcon: ThemeSwitchIcon,
-    iconSize: Dp,
-    iconScale: Float,
-    iconTint: Color,
-) {
-    val isSystemInDarkTheme = isSystemInDarkTheme()
-    IconButton(
-        onClick = {
-            animationState.toggleTheme(
-                isSystemInDarkTheme = isSystemInDarkTheme,
-                switchMode = buttonIcon.switchMode
-            )
-        },
-        modifier = Modifier.themeAnimationTarget(
-            state = animationState,
-            positionProvider = positionProvider
+    Box(
+        modifier.defaultMinSize(
+            minWidth = iconSize,
+            minHeight = iconSize
         )
     ) {
-        buttonIcon.Icon(
-            state = animationState,
-            tint = iconTint,
-            contentDescription = "Theme switch icon",
-            modifier = Modifier.size(iconSize).scale(iconScale),
+        OptionalPopup(
+            positionProvider = positionProvider,
+            enabled = isAnimating,
+            content = iconContent,
         )
     }
 }
@@ -129,3 +122,24 @@ internal expect fun Modifier.themeAnimationTarget(
     state: ThemeAnimationState,
     positionProvider: ThemeSwitchPositionProvider,
 ): Modifier
+
+@Composable
+internal fun OptionalPopup(
+    positionProvider: PopupPositionProvider,
+    enabled: Boolean = true,
+    content: @Composable () -> Unit,
+) {
+    if (enabled) {
+        Popup(
+            popupPositionProvider = positionProvider,
+            properties = PopupProperties(
+                focusable = false,
+                dismissOnClickOutside = false,
+                clippingEnabled = false,
+            ),
+            content = content
+        )
+    } else {
+        content()
+    }
+}

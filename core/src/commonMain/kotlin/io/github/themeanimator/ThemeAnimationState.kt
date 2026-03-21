@@ -60,6 +60,9 @@ class ThemeAnimationState(
     var uiTheme: Theme by mutableStateOf(themeProvider.currentTheme.value)
         private set
 
+    var isAnimating: Boolean by mutableStateOf(false)
+        private set
+
     internal val requestRecord = MutableStateFlow(RecordStatus.Initial)
 
     internal var buttonPosition: Offset? by mutableStateOf(null)
@@ -131,6 +134,11 @@ class ThemeAnimationState(
                     uiTheme = newTheme
                     requestRecord.value = RecordStatus.PrepareForAnimation
                 }
+        }
+        coroutineScope.launch {
+            requestRecord.collect {
+                isAnimating = it.isAnimating
+            }
         }
     }
 }

@@ -126,6 +126,7 @@ internal class ThemeAnimationNode(
         }
         animationPhase = AnimationPhase.Idle
         invalidateDraw()
+        state.requestRecord.value = RecordStatus.Initial
     }
 
     override fun ContentDrawScope.draw() {

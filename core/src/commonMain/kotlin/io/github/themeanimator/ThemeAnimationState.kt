@@ -2,25 +2,33 @@ package io.github.themeanimator
 
 import androidx.compose.animation.core.AnimationSpec
 import androidx.compose.animation.core.tween
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Stable
+import androidx.compose.runtime.State
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Rect
 import io.github.themeanimator.button.ButtonSwitchMode
 import io.github.themeanimator.theme.Theme
 import io.github.themeanimator.theme.ThemeProvider
+import io.github.themeanimator.theme.isDark
 import io.github.themeanimator.theme.rememberRuntimeThemeProvider
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.drop
 import kotlinx.coroutines.flow.firstOrNull
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 
 /**
@@ -48,6 +56,7 @@ class ThemeAnimationState(
     internal val animationSpec: AnimationSpec<Float>,
     internal val format: ThemeAnimationFormat,
     internal val useDynamicContent: Boolean,
+    internal val isSystemInDarkTheme: State<Boolean>,
 ) {
 
     /**
@@ -126,12 +135,20 @@ class ThemeAnimationState(
     init {
         coroutineScope.launch {
             themeProvider.currentTheme
+                .onEach {
+                    uiTheme = it
+                }
+                // React only to changes relative to system theme
+                .combine(
+                    snapshotFlow { isSystemInDarkTheme.value }
+                ) { uiTheme, isSystemInDarkTheme ->
+                    uiTheme.isDark(isSystemInDarkTheme)
+                }.distinctUntilChanged()
                 // Skip the initial theme
                 .drop(1)
-                .collectLatest { newTheme ->
+                .collectLatest { _ ->
                     requestRecord.value = RecordStatus.RecordRequested
                     requestRecord.firstOrNull { it == RecordStatus.Recorded }
-                    uiTheme = newTheme
                     requestRecord.value = RecordStatus.PrepareForAnimation
                 }
         }
@@ -167,6 +184,7 @@ fun rememberThemeAnimationState(
     format: ThemeAnimationFormat = ThemeAnimationFormat.Crossfade,
     useDynamicContent: Boolean = false,
 ): ThemeAnimationState {
+    val isSystemInDarkTheme = rememberUpdatedState(isSystemInDarkTheme())
     val coroutineScope = rememberCoroutineScope()
     return remember(
         themeProvider,
@@ -180,7 +198,8 @@ fun rememberThemeAnimationState(
             coroutineScope = coroutineScope,
             animationSpec = animationSpec,
             format = format,
-            useDynamicContent = useDynamicContent
+            useDynamicContent = useDynamicContent,
+            isSystemInDarkTheme = isSystemInDarkTheme
         )
     }
 }

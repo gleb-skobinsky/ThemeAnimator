@@ -15,9 +15,11 @@ import androidx.compose.runtime.Composable
  * @return `true` if the theme should display dark colors, `false` for light colors.
  */
 @Composable
-fun Theme.isDark(): Boolean = when (this) {
+fun Theme.isDark(): Boolean = isDark(isSystemInDarkTheme())
+
+fun Theme.isDark(isSystemInDarkTheme: Boolean) = when (this) {
     Theme.Light -> false
     Theme.Dark -> true
-    Theme.System if isSystemInDarkTheme() -> true
+    Theme.System if isSystemInDarkTheme -> true
     else -> false
 }

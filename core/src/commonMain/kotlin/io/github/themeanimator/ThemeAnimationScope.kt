@@ -2,8 +2,12 @@ package io.github.themeanimator
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.rememberGraphicsLayer
+import io.github.themeanimator.button.ThemeSwitchButtonImpl
+import io.github.themeanimator.layout.ThemeAnimationLayoutScope
+import io.github.themeanimator.layout.ThemeAnimationLayoutScopeImpl
 import io.github.themeanimator.theme.isDark
 
 /**
@@ -19,19 +23,23 @@ import io.github.themeanimator.theme.isDark
  *                This content will be captured and rendered with theme animation effects.
  */
 @Composable
-fun ThemeAnimationScope(
+inline fun ThemeAnimationScope(
     state: ThemeAnimationState,
-    content: @Composable () -> Unit,
+    content: @Composable ThemeAnimationLayoutScope.() -> Unit,
 ) {
+    val layoutScope = remember { ThemeAnimationLayoutScopeImpl() }
     val graphicsLayer = rememberGraphicsLayer()
 
-    Box(
-        modifier = Modifier.themeAnimation(
-            state = state,
-            isDark = state.uiTheme.isDark(),
-            graphicsLayer = graphicsLayer
-        )
-    ) {
-        content()
+    Box {
+        Box(
+            modifier = Modifier.themeAnimation(
+                state = state,
+                isDark = state.uiTheme.isDark(),
+                graphicsLayer = graphicsLayer
+            )
+        ) {
+            layoutScope.content()
+        }
+        layoutScope.ThemeSwitchButtonImpl()
     }
 }

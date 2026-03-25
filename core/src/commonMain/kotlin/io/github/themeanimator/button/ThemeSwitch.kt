@@ -2,13 +2,10 @@ package io.github.themeanimator.button
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.isSystemInDarkTheme
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.movableContentOf
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.scale
@@ -17,6 +14,9 @@ import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
 import io.github.themeanimator.ThemeAnimationState
+import io.github.themeanimator.layout.ButtonProperties
+import io.github.themeanimator.layout.ButtonSwitchType
+import io.github.themeanimator.layout.ThemeAnimationLayoutScope
 
 /**
  * A composable abstract switch that toggles themes in a binary or tristate transition.
@@ -35,7 +35,7 @@ import io.github.themeanimator.ThemeAnimationState
  * @param iconTint The tint that will be applied to the icon on the switch.
  */
 @Composable
-fun ThemeSwitch(
+fun ThemeAnimationLayoutScope.ThemeSwitch(
     animationState: ThemeAnimationState,
     buttonIcon: ThemeSwitchIcon = DefaultButtonIcon,
     modifier: Modifier = Modifier,
@@ -44,46 +44,38 @@ fun ThemeSwitch(
     iconShape: Shape = RoundedCornerShape(50),
     iconTint: Color = MaterialTheme.colorScheme.primary,
 ) {
-    val positionProvider = remember { ThemeSwitchPositionProvider() }
-    val isAnimating = animationState.isAnimating
+    val properties = ButtonProperties(
+        type = ButtonSwitchType.SwitchOnly,
+        animationState = animationState,
+        icon = buttonIcon,
+        modifier = modifier,
+        iconSize = iconSize,
+        iconScale = iconScale,
+        iconTint = iconTint,
+        iconShape = iconShape
+    )
+    ThemeSwitchWrapper(properties)
+}
 
-    val iconContent = remember(
-        animationState,
-        iconTint,
-        iconSize,
-        iconScale,
-        buttonIcon,
-        positionProvider
-    ) {
-        movableContentOf {
-            val isSystemInDarkTheme = isSystemInDarkTheme()
+@Composable
+internal fun ThemeSwitchBase(
+    properties: ButtonProperties,
+) {
+    val isSystemInDarkTheme = isSystemInDarkTheme()
 
-            buttonIcon.Icon(
-                state = animationState,
-                tint = iconTint,
-                contentDescription = "Theme switch icon",
-                modifier = Modifier
-                    .clip(iconShape)
-                    .size(iconSize)
-                    .themeAnimationTarget(
-                        state = animationState,
-                        positionProvider = positionProvider,
-                    )
-                    .clickable {
-                        animationState.toggleTheme(
-                            isSystemInDarkTheme = isSystemInDarkTheme,
-                            switchMode = buttonIcon.switchMode
-                        )
-                    }
-                    .scale(iconScale),
-            )
-        }
-    }
-    Box(modifier) {
-        OptionalPopup(
-            positionProvider = positionProvider,
-            enabled = isAnimating,
-            content = iconContent
-        )
-    }
+    properties.icon.Icon(
+        state = properties.animationState,
+        tint = properties.iconTint,
+        contentDescription = "Theme switch icon",
+        modifier = Modifier
+            .clip(properties.iconShape)
+            .size(properties.iconSize)
+            .clickable {
+                properties.animationState.toggleTheme(
+                    isSystemInDarkTheme = isSystemInDarkTheme,
+                    switchMode = properties.icon.switchMode
+                )
+            }
+            .scale(properties.iconScale),
+    )
 }

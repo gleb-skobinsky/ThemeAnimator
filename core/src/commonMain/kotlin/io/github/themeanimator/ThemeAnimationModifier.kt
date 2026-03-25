@@ -13,6 +13,7 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
+@PublishedApi
 internal fun Modifier.themeAnimation(
     state: ThemeAnimationState,
     isDark: Boolean,

@@ -1,19 +1,18 @@
 package io.github.themeanimator.button
 
 import androidx.compose.foundation.isSystemInDarkTheme
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.defaultMinSize
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.LocalMinimumInteractiveComponentSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.movableContentOf
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.Layout
 import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.DpSize
+import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Popup
 import androidx.compose.ui.window.PopupPositionProvider
@@ -21,6 +20,9 @@ import androidx.compose.ui.window.PopupProperties
 import io.github.themeanimator.ThemeAnimationState
 import io.github.themeanimator.defaulticons.MoonIcon
 import io.github.themeanimator.defaulticons.SunIcon
+import io.github.themeanimator.layout.ButtonProperties
+import io.github.themeanimator.layout.ButtonSwitchType
+import io.github.themeanimator.layout.ThemeAnimationLayoutScope
 
 /**
  * The default icon configuration for the theme switch button.
@@ -57,7 +59,7 @@ val DefaultButtonIcon = ThemeSwitchIcon.DuoVector(
  * @param iconTint The tint that will be applied to the icon on the button.
  */
 @Composable
-fun ThemeSwitchButton(
+fun ThemeAnimationLayoutScope.ThemeSwitchButton(
     animationState: ThemeAnimationState,
     buttonIcon: ThemeSwitchIcon = DefaultButtonIcon,
     modifier: Modifier = Modifier,
@@ -65,52 +67,90 @@ fun ThemeSwitchButton(
     iconScale: Float = 1f,
     iconTint: Color = MaterialTheme.colorScheme.primary,
 ) {
-    val iconSize = LocalMinimumInteractiveComponentSize.current
-    val positionProvider = remember { ThemeSwitchPositionProvider() }
-    val isAnimating = animationState.isAnimating
+    val properties = ButtonProperties(
+        type = ButtonSwitchType.IconButton,
+        animationState = animationState,
+        icon = buttonIcon,
+        modifier = modifier,
+        iconSize = DpSize(iconSize, iconSize),
+        iconScale = iconScale,
+        iconTint = iconTint
+    )
+    ThemeSwitchWrapper(properties)
+}
 
-    val iconContent = remember(
-        animationState,
-        iconTint,
-        iconSize,
-        iconScale,
-        buttonIcon,
-        positionProvider
-    ) {
-        movableContentOf {
-            val isSystemInDarkTheme = isSystemInDarkTheme()
-            IconButton(
-                onClick = {
-                    animationState.toggleTheme(
-                        isSystemInDarkTheme = isSystemInDarkTheme,
-                        switchMode = buttonIcon.switchMode
-                    )
-                },
-                modifier = Modifier.themeAnimationTarget(
-                    state = animationState,
-                    positionProvider = positionProvider,
-                ),
-            ) {
-                buttonIcon.Icon(
-                    state = animationState,
-                    tint = iconTint,
-                    contentDescription = "Theme switch icon",
-                    modifier = Modifier.size(iconSize).scale(iconScale),
-                )
+@Composable
+internal fun ThemeAnimationLayoutScope.ThemeSwitchWrapper(
+    properties: ButtonProperties,
+) {
+    Layout(
+        modifier = Modifier.themeSwitchButtonTracker(properties),
+        measurePolicy = { measurables, constraints ->
+            var maxWidth = 0
+            var maxHeight = 0
+            for (measurable in measurables) {
+                val placeable = measurable.measure(constraints)
+                val newWidth = placeable.measuredWidth
+                if (newWidth > maxWidth) {
+                    maxWidth = newWidth
+                }
+                val newHeight = placeable.measuredHeight
+                if (newHeight > maxHeight) {
+                    maxHeight = newHeight
+                }
             }
-        }
-    }
+            layout(width = maxWidth, height = maxHeight) {}
+        },
+        content = {
+            when (properties.type) {
+                ButtonSwitchType.IconButton -> ThemeSwitchButtonBase(properties)
+                ButtonSwitchType.SwitchOnly -> ThemeSwitchBase(properties)
+            }
 
-    Box(
-        modifier.defaultMinSize(
-            minWidth = iconSize,
-            minHeight = iconSize
-        )
+        }
+    )
+}
+
+
+@Composable
+@PublishedApi
+internal fun ThemeAnimationLayoutScope.ThemeSwitchButtonImpl() {
+    val buttonProperties = buttonProperties ?: return
+    val buttonPosition = buttonPosition ?: return
+
+    ThemeSwitchButtonBase(
+        properties = buttonProperties,
+        modifier = Modifier.offset {
+            IntOffset(
+                x = buttonPosition.offset.x.roundToPx(),
+                y = buttonPosition.offset.y.roundToPx()
+            )
+        }.size(buttonPosition.size)
+    )
+}
+
+@Composable
+private fun ThemeSwitchButtonBase(
+    properties: ButtonProperties,
+    modifier: Modifier = Modifier,
+) {
+    val isSystemInDarkTheme = isSystemInDarkTheme()
+    IconButton(
+        onClick = {
+            properties.animationState.toggleTheme(
+                isSystemInDarkTheme = isSystemInDarkTheme,
+                switchMode = properties.icon.switchMode
+            )
+        },
+        modifier = modifier.then(properties.modifier)
     ) {
-        OptionalPopup(
-            positionProvider = positionProvider,
-            enabled = isAnimating,
-            content = iconContent,
+        properties.icon.Icon(
+            state = properties.animationState,
+            tint = properties.iconTint,
+            contentDescription = "Theme switch icon",
+            modifier = Modifier
+                .size(properties.iconSize)
+                .scale(properties.iconScale),
         )
     }
 }

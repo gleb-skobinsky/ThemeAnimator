@@ -48,8 +48,8 @@ kotlin {
             implementation(libs.androidx.activity.compose)
         }
         commonMain.dependencies {
-            implementation(libs.self)
-            implementation(libs.self.storage)
+            implementation(projects.core)
+            implementation(projects.storage)
             implementation(libs.compose.runtime)
             implementation(libs.compose.foundation)
             implementation(libs.compose.material3)

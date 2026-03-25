@@ -8,7 +8,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.LayoutCoordinates
 import androidx.compose.ui.layout.boundsInWindow
 import androidx.compose.ui.node.CompositionLocalConsumerModifierNode
-import androidx.compose.ui.node.GlobalPositionAwareModifierNode
 import androidx.compose.ui.node.LayoutAwareModifierNode
 import androidx.compose.ui.node.ModifierNodeElement
 import androidx.compose.ui.node.currentValueOf
@@ -80,7 +79,6 @@ internal class ThemeSwitchButtonNode(
     private var layoutScope: ThemeAnimationLayoutScope,
     private var properties: ButtonProperties,
 ) : Modifier.Node(),
-//    GlobalPositionAwareModifierNode,
     LayoutAwareModifierNode,
     CompositionLocalConsumerModifierNode {
     override fun onAttach() {
@@ -124,9 +122,4 @@ internal class ThemeSwitchButtonNode(
             )
         }
     }
-
-//    override fun onGloballyPositioned(coordinates: LayoutCoordinates) {
-//        val bounds = coordinates.boundsInWindow()
-//
-//    }
 }

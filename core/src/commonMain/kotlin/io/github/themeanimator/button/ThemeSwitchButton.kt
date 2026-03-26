@@ -12,9 +12,6 @@ import androidx.compose.ui.layout.Layout
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.window.Popup
-import androidx.compose.ui.window.PopupPositionProvider
-import androidx.compose.ui.window.PopupProperties
 import io.github.themeanimator.ThemeAnimationState
 import io.github.themeanimator.defaulticons.MoonIcon
 import io.github.themeanimator.defaulticons.SunIcon
@@ -161,24 +158,3 @@ internal expect fun Modifier.themeAnimationTarget(
     state: ThemeAnimationState,
     positionProvider: ThemeSwitchPositionProvider,
 ): Modifier
-
-@Composable
-internal fun OptionalPopup(
-    positionProvider: PopupPositionProvider,
-    enabled: Boolean = true,
-    content: @Composable () -> Unit,
-) {
-    if (enabled) {
-        Popup(
-            popupPositionProvider = positionProvider,
-            properties = PopupProperties(
-                focusable = false,
-                dismissOnClickOutside = false,
-                clippingEnabled = false,
-            ),
-            content = content
-        )
-    } else {
-        content()
-    }
-}

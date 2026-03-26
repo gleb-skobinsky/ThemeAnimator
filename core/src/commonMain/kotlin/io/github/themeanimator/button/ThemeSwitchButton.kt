@@ -1,7 +1,6 @@
 package io.github.themeanimator.button
 
 import androidx.compose.foundation.isSystemInDarkTheme
-import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -12,7 +11,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.Layout
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.DpSize
-import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Popup
 import androidx.compose.ui.window.PopupPositionProvider
@@ -106,7 +104,6 @@ internal fun ThemeAnimationLayoutScope.ThemeSwitchWrapper(
                 ButtonSwitchType.IconButton -> ThemeSwitchButtonBase(properties)
                 ButtonSwitchType.SwitchOnly -> ThemeSwitchBase(properties)
             }
-
         }
     )
 }
@@ -116,17 +113,19 @@ internal fun ThemeAnimationLayoutScope.ThemeSwitchWrapper(
 @PublishedApi
 internal fun ThemeAnimationLayoutScope.ThemeSwitchButtonImpl() {
     val buttonProperties = buttonProperties ?: return
-    val buttonPosition = buttonPosition ?: return
 
-    ThemeSwitchButtonBase(
-        properties = buttonProperties,
-        modifier = Modifier.offset {
-            IntOffset(
-                x = buttonPosition.offset.x.roundToPx(),
-                y = buttonPosition.offset.y.roundToPx()
-            )
-        }.size(buttonPosition.size)
-    )
+    when (buttonProperties.type) {
+        ButtonSwitchType.IconButton -> ThemeSwitchButtonBase(
+            properties = buttonProperties,
+            modifier = Modifier.realSwitchLayoutProvider(this)
+        )
+
+        ButtonSwitchType.SwitchOnly -> ThemeSwitchBase(
+            properties = buttonProperties,
+            modifier = Modifier.realSwitchLayoutProvider(this)
+        )
+    }
+
 }
 
 @Composable

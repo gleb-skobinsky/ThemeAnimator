@@ -60,6 +60,7 @@ fun ThemeAnimationLayoutScope.ThemeSwitch(
 @Composable
 internal fun ThemeSwitchBase(
     properties: ButtonProperties,
+    modifier: Modifier = Modifier,
 ) {
     val isSystemInDarkTheme = isSystemInDarkTheme()
 
@@ -67,7 +68,7 @@ internal fun ThemeSwitchBase(
         state = properties.animationState,
         tint = properties.iconTint,
         contentDescription = "Theme switch icon",
-        modifier = Modifier
+        modifier = modifier
             .clip(properties.iconShape)
             .size(properties.iconSize)
             .clickable {

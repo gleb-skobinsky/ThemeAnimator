@@ -22,14 +22,16 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
-import io.github.themeanimator.button.ThemeSwitchButton
+import io.github.themeanimator.button.ExperimentalThemeSwitchApi
+import io.github.themeanimator.button.ThemeSwitch
 import io.github.themeanimator.button.rememberLottieIconJson
 import io.github.themeanimator.storage.themeViewModel
 import io.github.themeanimator.theme.isDark
 import themeanimator.composeapp.generated.resources.Res
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalThemeSwitchApi::class)
 @Composable
 @Preview
 fun App() {
@@ -58,20 +60,6 @@ fun App() {
                         verticalArrangement = Arrangement.Center,
                         horizontalAlignment = Alignment.End
                     ) {
-                        ThemeSwitchButton(
-                            animationState = animationState,
-                            buttonIcon = rememberLottieIconJson(
-                                lightThemeProgress = 0f,
-                                darkThemeProgress = 1f,
-                                systemThemeProgress = 0.2f,
-                                animationSpec = animationSpec
-                            ) {
-                                Res.readBytes("files/tristate.json").decodeToString()
-                            },
-                            iconTint = Color.Unspecified,
-                            modifier = Modifier.padding(end = 12.dp),
-                            iconSize = 40.dp,
-                        )
                     }
                 }
             ) { contentPadding ->
@@ -89,6 +77,21 @@ fun App() {
                     ) {
                         Text("Click me!")
                     }
+
+                    ThemeSwitch(
+                        animationState = animationState,
+                        buttonIcon = rememberLottieIconJson(
+                            lightThemeProgress = 0f,
+                            darkThemeProgress = 1f,
+                            systemThemeProgress = 0.2f,
+                            animationSpec = animationSpec
+                        ) {
+                            Res.readBytes("files/tristate.json").decodeToString()
+                        },
+                        iconTint = Color.Unspecified,
+                        modifier = Modifier.padding(end = 12.dp),
+                        iconSize = DpSize(200.dp, 100.dp),
+                    )
 
                     repeat(3) {
                         Text(

@@ -5,7 +5,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.rememberGraphicsLayer
-import io.github.themeanimator.button.ThemeSwitchButtonImpl
+import io.github.themeanimator.button.SkippingLayout
+import io.github.themeanimator.button.TypeBasedGenericSwitch
+import io.github.themeanimator.button.realSwitchLayout
 import io.github.themeanimator.layout.ThemeAnimationLayoutScope
 import io.github.themeanimator.layout.ThemeAnimationLayoutScopeImpl
 import io.github.themeanimator.theme.isDark
@@ -40,6 +42,24 @@ inline fun ThemeAnimationScope(
         ) {
             layoutScope.content()
         }
-        layoutScope.ThemeSwitchButtonImpl()
+
+        SkippingLayout(
+            modifier = Modifier.realSwitchLayout(layoutScope),
+            shouldSkip = !state.isAnimating,
+            content = {
+                val props = layoutScope.buttonProperties ?: return@SkippingLayout
+
+                TypeBasedGenericSwitch(
+                    animationState = state,
+                    buttonIcon = props.icon,
+                    modifier = props.modifier,
+                    iconSize = props.iconSize,
+                    iconScale = props.iconScale,
+                    iconTint = props.iconTint,
+                    iconShape = props.iconShape,
+                    buttonSwitchType = props.type
+                )
+            }
+        )
     }
 }

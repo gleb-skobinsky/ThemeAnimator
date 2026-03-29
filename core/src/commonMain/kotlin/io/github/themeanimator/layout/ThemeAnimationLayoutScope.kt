@@ -14,6 +14,7 @@ import androidx.compose.ui.node.currentValueOf
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.DpSize
+import io.github.themeanimator.ThemeAnimationState
 
 abstract class ThemeAnimationLayoutScope {
     internal abstract val buttonProperties: ButtonProperties?
@@ -21,7 +22,7 @@ abstract class ThemeAnimationLayoutScope {
     internal abstract val buttonPosition: ButtonPosition?
 
     internal abstract fun updateButton(
-        properties: ButtonProperties,
+        properties: ButtonProperties?,
     )
 
     internal abstract fun updatePosition(
@@ -29,10 +30,12 @@ abstract class ThemeAnimationLayoutScope {
     )
 
     internal fun Modifier.themeSwitchButtonTracker(
-        properties: ButtonProperties,
+        buttonProperties: ButtonProperties,
+        animationState: ThemeAnimationState,
     ) = this then ThemeSwitchButtonElement(
-        properties = properties,
-        layoutScope = this@ThemeAnimationLayoutScope
+        buttonProperties = buttonProperties,
+        layoutScope = this@ThemeAnimationLayoutScope,
+        animationState = animationState
     )
 }
 
@@ -46,7 +49,7 @@ internal class ThemeAnimationLayoutScopeImpl : ThemeAnimationLayoutScope() {
     override var buttonPosition: ButtonPosition? by mutableStateOf(null)
 
     override fun updateButton(
-        properties: ButtonProperties,
+        properties: ButtonProperties?,
     ) {
         buttonProperties = properties
     }
@@ -57,27 +60,31 @@ internal class ThemeAnimationLayoutScopeImpl : ThemeAnimationLayoutScope() {
 }
 
 internal data class ThemeSwitchButtonElement(
-    val properties: ButtonProperties,
+    val buttonProperties: ButtonProperties,
     val layoutScope: ThemeAnimationLayoutScope,
+    val animationState: ThemeAnimationState,
 ) : ModifierNodeElement<ThemeSwitchButtonNode>() {
     override fun create(): ThemeSwitchButtonNode {
         return ThemeSwitchButtonNode(
             layoutScope = layoutScope,
-            properties = properties,
+            currentProperties = buttonProperties,
+            currentState = animationState,
         )
     }
 
     override fun update(node: ThemeSwitchButtonNode) {
         node.updateState(
             newScope = layoutScope,
-            newProperties = properties
+            newContent = buttonProperties,
+            newState = animationState,
         )
     }
 }
 
 internal class ThemeSwitchButtonNode(
     private var layoutScope: ThemeAnimationLayoutScope,
-    private var properties: ButtonProperties,
+    private var currentProperties: ButtonProperties?,
+    private var currentState: ThemeAnimationState,
 ) : Modifier.Node(),
     LayoutAwareModifierNode,
     CompositionLocalConsumerModifierNode {
@@ -87,25 +94,29 @@ internal class ThemeSwitchButtonNode(
     }
 
     private fun updateScopeState() {
-        layoutScope.updateButton(properties)
+        layoutScope.updateButton(currentProperties)
     }
 
     fun updateState(
         newScope: ThemeAnimationLayoutScope,
-        newProperties: ButtonProperties,
+        newContent: ButtonProperties?,
+        newState: ThemeAnimationState,
     ) {
         if (layoutScope != newScope) {
             layoutScope = newScope
         }
-        if (properties != newProperties) {
-            properties = newProperties
+        if (currentProperties != newContent) {
+            currentProperties = newContent
+        }
+        if (currentState != newState) {
+            currentState = newState
         }
         updateScopeState()
     }
 
     override fun onPlaced(coordinates: LayoutCoordinates) {
         val bounds = coordinates.boundsInWindow()
-        layoutScope.buttonProperties?.animationState?.updateButtonPosition(bounds)
+        currentState.updateButtonPosition(bounds)
         val density = currentValueOf(LocalDensity)
         with(density) {
             layoutScope.updatePosition(

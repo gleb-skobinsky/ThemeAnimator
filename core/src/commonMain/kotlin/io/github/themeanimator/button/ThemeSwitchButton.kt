@@ -4,10 +4,14 @@ import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.RippleConfiguration
+import androidx.compose.material3.RippleDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.RectangleShape
+import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.layout.Layout
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.DpSize
@@ -54,6 +58,7 @@ val DefaultButtonIcon = ThemeSwitchIcon.DuoVector(
  * @param iconTint The tint that will be applied to the icon on the button.
  */
 @Composable
+@ExperimentalThemeSwitchApi
 fun ThemeAnimationLayoutScope.ThemeSwitchButton(
     animationState: ThemeAnimationState,
     buttonIcon: ThemeSwitchIcon = DefaultButtonIcon,
@@ -62,28 +67,115 @@ fun ThemeAnimationLayoutScope.ThemeSwitchButton(
     iconScale: Float = 1f,
     iconTint: Color = MaterialTheme.colorScheme.primary,
 ) {
-    val properties = ButtonProperties(
-        type = ButtonSwitchType.IconButton,
+    ThemeSwitchWrapper(
         animationState = animationState,
-        icon = buttonIcon,
+        buttonIcon = buttonIcon,
         modifier = modifier,
-        iconSize = DpSize(iconSize, iconSize),
+        iconShape = RectangleShape,
+        iconSize = DpSize(width = iconSize, height = iconSize),
         iconScale = iconScale,
-        iconTint = iconTint
+        iconTint = iconTint,
+        buttonSwitchType = ButtonSwitchType.IconButton,
     )
-    ThemeSwitchWrapper(properties)
 }
+
+// private val FixedRippleColor = Color.Black.copy(alpha = 0.3f)
+@PublishedApi
+internal val FixedRippleConfiguration = RippleConfiguration(
+    color = Color.Transparent,
+    rippleAlpha = RippleDefaults.RippleAlpha,
+)
 
 @Composable
 internal fun ThemeAnimationLayoutScope.ThemeSwitchWrapper(
-    properties: ButtonProperties,
+    animationState: ThemeAnimationState,
+    buttonIcon: ThemeSwitchIcon,
+    modifier: Modifier,
+    iconSize: DpSize,
+    iconScale: Float,
+    iconTint: Color,
+    iconShape: Shape,
+    buttonSwitchType: ButtonSwitchType,
+) {
+    SkippingLayout(
+        modifier = Modifier.themeSwitchButtonTracker(
+            buttonProperties = ButtonProperties(
+                type = buttonSwitchType,
+                icon = buttonIcon,
+                modifier = modifier,
+                iconSize = iconSize,
+                iconScale = iconScale,
+                iconTint = iconTint,
+            ),
+            animationState = animationState
+        ),
+        shouldSkip = animationState.isAnimating,
+        content = {
+            TypeBasedGenericSwitch(
+                animationState = animationState,
+                buttonIcon = buttonIcon,
+                modifier = modifier,
+                iconSize = iconSize,
+                iconScale = iconScale,
+                iconTint = iconTint,
+                iconShape = iconShape,
+                buttonSwitchType = buttonSwitchType,
+            )
+        }
+    )
+}
+
+@Composable
+@PublishedApi
+internal fun TypeBasedGenericSwitch(
+    animationState: ThemeAnimationState,
+    buttonIcon: ThemeSwitchIcon,
+    modifier: Modifier,
+    iconSize: DpSize,
+    iconScale: Float,
+    iconTint: Color,
+    iconShape: Shape,
+    buttonSwitchType: ButtonSwitchType,
+) {
+    when (buttonSwitchType) {
+        ButtonSwitchType.IconButton -> {
+            ThemeSwitchButtonBase(
+                animationState = animationState,
+                icon = buttonIcon,
+                modifier = modifier,
+                iconSize = iconSize,
+                iconScale = iconScale,
+                iconTint = iconTint
+            )
+        }
+
+        ButtonSwitchType.SwitchOnly -> {
+            ThemeSwitchBase(
+                icon = buttonIcon,
+                animationState = animationState,
+                iconTint = iconTint,
+                iconShape = iconShape,
+                iconSize = iconSize,
+                iconScale = iconScale,
+                modifier = modifier,
+            )
+        }
+    }
+}
+
+@Composable
+@PublishedApi
+internal fun SkippingLayout(
+    shouldSkip: Boolean,
+    modifier: Modifier = Modifier,
+    content: @Composable () -> Unit,
 ) {
     Layout(
-        modifier = Modifier.themeSwitchButtonTracker(properties),
+        modifier = modifier,
         measurePolicy = { measurables, constraints ->
             var maxWidth = 0
             var maxHeight = 0
-            for (measurable in measurables) {
+            val placeables = measurables.map { measurable ->
                 val placeable = measurable.measure(constraints)
                 val newWidth = placeable.measuredWidth
                 if (newWidth > maxWidth) {
@@ -93,60 +185,45 @@ internal fun ThemeAnimationLayoutScope.ThemeSwitchWrapper(
                 if (newHeight > maxHeight) {
                     maxHeight = newHeight
                 }
+                placeable
             }
-            layout(width = maxWidth, height = maxHeight) {}
+            layout(width = maxWidth, height = maxHeight) {
+                if (!shouldSkip) {
+                    placeables.onEach { it.place(0, 0) }
+                }
+            }
         },
-        content = {
-            when (properties.type) {
-                ButtonSwitchType.IconButton -> ThemeSwitchButtonBase(properties)
-                ButtonSwitchType.SwitchOnly -> ThemeSwitchBase(properties)
-            }
-        }
+        content = content
     )
 }
 
-
 @Composable
 @PublishedApi
-internal fun ThemeAnimationLayoutScope.ThemeSwitchButtonImpl() {
-    val buttonProperties = buttonProperties ?: return
-
-    when (buttonProperties.type) {
-        ButtonSwitchType.IconButton -> ThemeSwitchButtonBase(
-            properties = buttonProperties,
-            modifier = Modifier.realSwitchLayoutProvider(this)
-        )
-
-        ButtonSwitchType.SwitchOnly -> ThemeSwitchBase(
-            properties = buttonProperties,
-            modifier = Modifier.realSwitchLayoutProvider(this)
-        )
-    }
-
-}
-
-@Composable
-private fun ThemeSwitchButtonBase(
-    properties: ButtonProperties,
-    modifier: Modifier = Modifier,
+internal fun ThemeSwitchButtonBase(
+    animationState: ThemeAnimationState,
+    icon: ThemeSwitchIcon,
+    modifier: Modifier,
+    iconTint: Color,
+    iconSize: DpSize,
+    iconScale: Float,
 ) {
     val isSystemInDarkTheme = isSystemInDarkTheme()
     IconButton(
         onClick = {
-            properties.animationState.toggleTheme(
+            animationState.toggleTheme(
                 isSystemInDarkTheme = isSystemInDarkTheme,
-                switchMode = properties.icon.switchMode
+                switchMode = icon.switchMode
             )
         },
-        modifier = modifier.then(properties.modifier)
+        modifier = modifier
     ) {
-        properties.icon.Icon(
-            state = properties.animationState,
-            tint = properties.iconTint,
+        icon.Icon(
+            state = animationState,
+            tint = iconTint,
             contentDescription = "Theme switch icon",
             modifier = Modifier
-                .size(properties.iconSize)
-                .scale(properties.iconScale),
+                .size(iconSize)
+                .scale(iconScale),
         )
     }
 }

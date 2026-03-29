@@ -14,7 +14,6 @@ import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
 import io.github.themeanimator.ThemeAnimationState
-import io.github.themeanimator.layout.ButtonProperties
 import io.github.themeanimator.layout.ButtonSwitchType
 import io.github.themeanimator.layout.ThemeAnimationLayoutScope
 
@@ -35,6 +34,7 @@ import io.github.themeanimator.layout.ThemeAnimationLayoutScope
  * @param iconTint The tint that will be applied to the icon on the switch.
  */
 @Composable
+@ExperimentalThemeSwitchApi
 fun ThemeAnimationLayoutScope.ThemeSwitch(
     animationState: ThemeAnimationState,
     buttonIcon: ThemeSwitchIcon = DefaultButtonIcon,
@@ -44,39 +44,43 @@ fun ThemeAnimationLayoutScope.ThemeSwitch(
     iconShape: Shape = RoundedCornerShape(50),
     iconTint: Color = MaterialTheme.colorScheme.primary,
 ) {
-    val properties = ButtonProperties(
-        type = ButtonSwitchType.SwitchOnly,
+    ThemeSwitchWrapper(
         animationState = animationState,
-        icon = buttonIcon,
+        buttonIcon = buttonIcon,
         modifier = modifier,
         iconSize = iconSize,
         iconScale = iconScale,
         iconTint = iconTint,
-        iconShape = iconShape
+        iconShape = iconShape,
+        buttonSwitchType = ButtonSwitchType.SwitchOnly,
     )
-    ThemeSwitchWrapper(properties)
 }
 
 @Composable
 internal fun ThemeSwitchBase(
-    properties: ButtonProperties,
-    modifier: Modifier = Modifier,
+    icon: ThemeSwitchIcon,
+    animationState: ThemeAnimationState,
+    iconTint: Color,
+    iconShape: Shape,
+    iconSize: DpSize,
+    iconScale: Float,
+    modifier: Modifier,
 ) {
     val isSystemInDarkTheme = isSystemInDarkTheme()
 
-    properties.icon.Icon(
-        state = properties.animationState,
-        tint = properties.iconTint,
+    icon.Icon(
+        state = animationState,
+        tint = iconTint,
         contentDescription = "Theme switch icon",
         modifier = modifier
-            .clip(properties.iconShape)
-            .size(properties.iconSize)
+            .clip(iconShape)
+            .size(iconSize)
             .clickable {
-                properties.animationState.toggleTheme(
+                animationState.toggleTheme(
                     isSystemInDarkTheme = isSystemInDarkTheme,
-                    switchMode = properties.icon.switchMode
+                    switchMode = icon.switchMode
                 )
             }
-            .scale(properties.iconScale),
+            .scale(iconScale),
     )
 }

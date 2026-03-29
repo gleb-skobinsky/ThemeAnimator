@@ -13,7 +13,6 @@ import io.github.themeanimator.button.ThemeSwitchIcon
 @PublishedApi
 internal data class ButtonProperties(
     val type: ButtonSwitchType,
-    val animationState: ThemeAnimationState,
     val icon: ThemeSwitchIcon,
     val modifier: Modifier,
     val iconSize: DpSize,

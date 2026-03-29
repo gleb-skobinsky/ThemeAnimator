@@ -2,13 +2,11 @@ package io.github.themeanimator.layout
 
 import androidx.compose.foundation.Indication
 import androidx.compose.foundation.interaction.MutableInteractionSource
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Immutable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.unit.DpSize
-import io.github.themeanimator.ThemeAnimationState
 import io.github.themeanimator.button.ThemeSwitchIcon
 
 @Immutable

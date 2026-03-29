@@ -7,8 +7,6 @@ import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.RippleConfiguration
-import androidx.compose.material3.RippleDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.scale
@@ -85,13 +83,6 @@ fun ThemeAnimationLayoutScope.ThemeSwitchButton(
         interactionSource = interactionSource
     )
 }
-
-// private val FixedRippleColor = Color.Black.copy(alpha = 0.3f)
-@PublishedApi
-internal val FixedRippleConfiguration = RippleConfiguration(
-    color = Color.Transparent,
-    rippleAlpha = RippleDefaults.RippleAlpha,
-)
 
 @Composable
 internal fun ThemeAnimationLayoutScope.ThemeSwitchWrapper(

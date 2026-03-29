@@ -20,5 +20,5 @@ internal data class ButtonProperties(
     val iconTint: Color,
     val iconShape: Shape,
     val indication: Indication?,
-    val interactionSource: MutableInteractionSource?,
+    val interactionSource: MutableInteractionSource,
 )

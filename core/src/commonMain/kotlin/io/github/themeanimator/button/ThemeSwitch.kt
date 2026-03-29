@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.scale
@@ -49,6 +50,9 @@ fun ThemeAnimationLayoutScope.ThemeSwitch(
     interactionSource: MutableInteractionSource? = null,
     indication: Indication? = LocalIndication.current,
 ) {
+    val internalInteractionSource = interactionSource ?: remember {
+        MutableInteractionSource()
+    }
     ThemeSwitchWrapper(
         animationState = animationState,
         buttonIcon = buttonIcon,
@@ -59,7 +63,7 @@ fun ThemeAnimationLayoutScope.ThemeSwitch(
         iconShape = iconShape,
         buttonSwitchType = ButtonSwitchType.SwitchOnly,
         indication = indication,
-        interactionSource = interactionSource
+        interactionSource = internalInteractionSource
     )
 }
 

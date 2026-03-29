@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
@@ -70,6 +71,9 @@ fun ThemeAnimationLayoutScope.ThemeSwitchButton(
     interactionSource: MutableInteractionSource? = null,
     indication: Indication? = LocalIndication.current,
 ) {
+    val internalInteractionSource = interactionSource ?: remember {
+        MutableInteractionSource()
+    }
     ThemeSwitchWrapper(
         animationState = animationState,
         buttonIcon = buttonIcon,
@@ -80,7 +84,7 @@ fun ThemeAnimationLayoutScope.ThemeSwitchButton(
         iconTint = iconTint,
         buttonSwitchType = ButtonSwitchType.IconButton,
         indication = indication,
-        interactionSource = interactionSource
+        interactionSource = internalInteractionSource
     )
 }
 
@@ -94,7 +98,7 @@ internal fun ThemeAnimationLayoutScope.ThemeSwitchWrapper(
     iconTint: Color,
     iconShape: Shape,
     buttonSwitchType: ButtonSwitchType,
-    interactionSource: MutableInteractionSource?,
+    interactionSource: MutableInteractionSource,
     indication: Indication?,
 ) {
     SkippingLayout(

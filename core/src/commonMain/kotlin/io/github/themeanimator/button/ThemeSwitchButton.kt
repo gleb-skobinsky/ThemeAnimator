@@ -1,5 +1,8 @@
 package io.github.themeanimator.button
 
+import androidx.compose.foundation.Indication
+import androidx.compose.foundation.LocalIndication
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.IconButton
@@ -66,6 +69,8 @@ fun ThemeAnimationLayoutScope.ThemeSwitchButton(
     iconSize: Dp = 20.dp,
     iconScale: Float = 1f,
     iconTint: Color = MaterialTheme.colorScheme.primary,
+    interactionSource: MutableInteractionSource? = null,
+    indication: Indication? = LocalIndication.current,
 ) {
     ThemeSwitchWrapper(
         animationState = animationState,
@@ -76,6 +81,8 @@ fun ThemeAnimationLayoutScope.ThemeSwitchButton(
         iconScale = iconScale,
         iconTint = iconTint,
         buttonSwitchType = ButtonSwitchType.IconButton,
+        indication = indication,
+        interactionSource = interactionSource
     )
 }
 
@@ -96,6 +103,8 @@ internal fun ThemeAnimationLayoutScope.ThemeSwitchWrapper(
     iconTint: Color,
     iconShape: Shape,
     buttonSwitchType: ButtonSwitchType,
+    interactionSource: MutableInteractionSource?,
+    indication: Indication?,
 ) {
     SkippingLayout(
         modifier = Modifier.themeSwitchButtonTracker(
@@ -106,6 +115,9 @@ internal fun ThemeAnimationLayoutScope.ThemeSwitchWrapper(
                 iconSize = iconSize,
                 iconScale = iconScale,
                 iconTint = iconTint,
+                iconShape = iconShape,
+                indication = indication,
+                interactionSource = interactionSource,
             ),
             animationState = animationState
         ),
@@ -120,6 +132,8 @@ internal fun ThemeAnimationLayoutScope.ThemeSwitchWrapper(
                 iconTint = iconTint,
                 iconShape = iconShape,
                 buttonSwitchType = buttonSwitchType,
+                interactionSource = interactionSource,
+                indication = indication
             )
         }
     )
@@ -136,6 +150,8 @@ internal fun TypeBasedGenericSwitch(
     iconTint: Color,
     iconShape: Shape,
     buttonSwitchType: ButtonSwitchType,
+    interactionSource: MutableInteractionSource?,
+    indication: Indication?,
 ) {
     when (buttonSwitchType) {
         ButtonSwitchType.IconButton -> {
@@ -145,7 +161,9 @@ internal fun TypeBasedGenericSwitch(
                 modifier = modifier,
                 iconSize = iconSize,
                 iconScale = iconScale,
-                iconTint = iconTint
+                iconTint = iconTint,
+                indication = indication,
+                interactionSource = interactionSource,
             )
         }
 
@@ -158,6 +176,8 @@ internal fun TypeBasedGenericSwitch(
                 iconSize = iconSize,
                 iconScale = iconScale,
                 modifier = modifier,
+                indication = indication,
+                interactionSource = interactionSource
             )
         }
     }
@@ -206,16 +226,20 @@ internal fun ThemeSwitchButtonBase(
     iconTint: Color,
     iconSize: DpSize,
     iconScale: Float,
+    indication: Indication?,
+    interactionSource: MutableInteractionSource?,
 ) {
     val isSystemInDarkTheme = isSystemInDarkTheme()
-    IconButton(
+    ThemeIconButton(
         onClick = {
             animationState.toggleTheme(
                 isSystemInDarkTheme = isSystemInDarkTheme,
                 switchMode = icon.switchMode
             )
         },
-        modifier = modifier
+        modifier = modifier,
+        indication = indication,
+        interactionSource = interactionSource,
     ) {
         icon.Icon(
             state = animationState,

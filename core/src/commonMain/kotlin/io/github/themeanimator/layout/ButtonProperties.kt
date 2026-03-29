@@ -1,5 +1,7 @@
 package io.github.themeanimator.layout
 
+import androidx.compose.foundation.Indication
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Immutable
 import androidx.compose.ui.Modifier
@@ -18,5 +20,7 @@ internal data class ButtonProperties(
     val iconSize: DpSize,
     val iconScale: Float,
     val iconTint: Color,
-    val iconShape: Shape = RoundedCornerShape(50)
+    val iconShape: Shape,
+    val indication: Indication?,
+    val interactionSource: MutableInteractionSource?,
 )

@@ -1,0 +1,55 @@
+package io.github.themeanimator.button
+
+import androidx.compose.foundation.Indication
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.size
+import androidx.compose.material3.IconButtonColors
+import androidx.compose.material3.IconButtonDefaults
+import androidx.compose.material3.LocalContentColor
+import androidx.compose.material3.minimumInteractiveComponentSize
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Shape
+import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.unit.Dp
+
+@Composable
+fun ThemeIconButton(
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+    enabled: Boolean = true,
+    colors: IconButtonColors = IconButtonDefaults.iconButtonColors(),
+    interactionSource: MutableInteractionSource? = null,
+    indication: Indication? = null,
+    shape: Shape = IconButtonDefaults.standardShape,
+    content: @Composable () -> Unit,
+) {
+    val interactionSource = interactionSource ?: remember { MutableInteractionSource() }
+    Box(
+        modifier =
+            modifier
+                .minimumInteractiveComponentSize()
+                .clip(shape)
+                .background(color = colors.containerColor, shape = shape)
+                .clickable(
+                    onClick = onClick,
+                    enabled = enabled,
+                    role = Role.Button,
+                    interactionSource = interactionSource,
+                    indication = indication,
+                ),
+        contentAlignment = Alignment.Center,
+    ) {
+        CompositionLocalProvider(
+            LocalContentColor provides colors.contentColor,
+            content = content
+        )
+    }
+}

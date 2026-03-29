@@ -1,10 +1,14 @@
 package io.github.themeanimator.button
 
+import androidx.compose.foundation.Indication
+import androidx.compose.foundation.LocalIndication
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ripple
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -43,6 +47,8 @@ fun ThemeAnimationLayoutScope.ThemeSwitch(
     iconScale: Float = 1f,
     iconShape: Shape = RoundedCornerShape(50),
     iconTint: Color = MaterialTheme.colorScheme.primary,
+    interactionSource: MutableInteractionSource? = null,
+    indication: Indication? = LocalIndication.current,
 ) {
     ThemeSwitchWrapper(
         animationState = animationState,
@@ -53,6 +59,8 @@ fun ThemeAnimationLayoutScope.ThemeSwitch(
         iconTint = iconTint,
         iconShape = iconShape,
         buttonSwitchType = ButtonSwitchType.SwitchOnly,
+        indication = indication,
+        interactionSource = interactionSource
     )
 }
 
@@ -65,6 +73,8 @@ internal fun ThemeSwitchBase(
     iconSize: DpSize,
     iconScale: Float,
     modifier: Modifier,
+    interactionSource: MutableInteractionSource?,
+    indication: Indication?,
 ) {
     val isSystemInDarkTheme = isSystemInDarkTheme()
 
@@ -75,7 +85,10 @@ internal fun ThemeSwitchBase(
         modifier = modifier
             .clip(iconShape)
             .size(iconSize)
-            .clickable {
+            .clickable(
+                interactionSource = interactionSource,
+                indication = indication
+            ) {
                 animationState.toggleTheme(
                     isSystemInDarkTheme = isSystemInDarkTheme,
                     switchMode = icon.switchMode

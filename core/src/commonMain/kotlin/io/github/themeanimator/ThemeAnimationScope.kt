@@ -57,7 +57,9 @@ inline fun ThemeAnimationScope(
                     iconScale = props.iconScale,
                     iconTint = props.iconTint,
                     iconShape = props.iconShape,
-                    buttonSwitchType = props.type
+                    buttonSwitchType = props.type,
+                    indication = props.indication,
+                    interactionSource = props.interactionSource
                 )
             }
         )

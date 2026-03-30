@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.scale
@@ -101,6 +102,11 @@ internal fun ThemeAnimationLayoutScope.ThemeSwitchWrapper(
     interactionSource: MutableInteractionSource,
     indication: Indication?,
 ) {
+    DisposableEffect(Unit) {
+        onDispose {
+            updateButton(properties = null)
+        }
+    }
     SkippingLayout(
         modifier = Modifier.themeSwitchButtonTracker(
             buttonProperties = ButtonProperties(
